@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kenan Hussam Eddin Al Chayah | Embedded Systems, Robotics & High-Voltage Engineering Portfolio</title>
+  <meta name="description" content="Engineering Portfolio of Kenan Hussam Eddin Al Chayah — Grade 12 Senior at Manarat Al Sharjah Private School, UAE. Creator of OzoCore (250kV Plasma Reactor), Assistant-San (ESP32-S3 + Gemini Live AI Companion), EEZYbotARM MK2, Smart Desert Reclaimer Rover, and THERMOSYNC." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            void: '#04070d',
+            obsidian: '#0a0f1a',
+            panel: '#0e1626',
+            cyan: {
+              400: '#00f2fe',
+              500: '#00d2ff',
+            },
+            plasma: {
+              400: '#c084fc',
+              500: '#9333ea',
+              600: '#7e22ce',
+            },
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-void: #04070d;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --plasma-glow: rgba(168, 85, 247, 0.35);
+      --emerald-glow: rgba(16, 185, 129, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      color: #e2e8f0;
+      overflow-x: hidden;
+      selection-background-color: #00f2fe;
+      selection-color: #04070d;
+    }
+
+    /* Guarantee flat-table photos never rotate sideways from stale EXIF cache */
+    .raw-upright {
+      image-orientation: none !important;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #04070d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 242, 254, 0.25);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f2fe;
+    }
+
+    /* Engineering Blueprint Grid */
+    .bg-blueprint {
+      background-size: 44px 44px;
+      background-image:
+        linear-gradient(to right, rgba(0, 242, 254, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 242, 254, 0.04) 1px, transparent 1px);
+    }
+
+    /* Glassmorphic HUD Cards with Mouse Spotlight */
+    .hud-card {
+      position: relative;
+      background: rgba(12, 19, 34, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, box-shadow 0.28s ease;
+      overflow: hidden;
+    }
+    .hud-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 242, 254, 0.08), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hud-card:hover::before {
+      opacity: 1;
+    }
+    .hud-card:hover {
+      border-color: rgba(0, 242, 254, 0.42);
+      box-shadow: 0 16px 48px -12px rgba(0, 242, 254, 0.16);
+      transform: translateY(-3px);
+    }
+
+    .hud-card-plasma:hover {
+      border-color: rgba(192, 132, 252, 0.5);
+      box-shadow: 0 16px 48px -12px rgba(168, 85, 247, 0.22);
+    }
+    .hud-card-emerald:hover {
+      border-color: rgba(52, 211, 153, 0.5);
+      box-shadow: 0 16px 48px -12px rgba(16, 185, 129, 0.2);
+    }
+    .hud-card-amber:hover {
+      border-color: rgba(251, 191, 36, 0.5);
+      box-shadow: 0 16px 48px -12px rgba(245, 158, 11, 0.2);
+    }
+
+    /* HUD Corner Brackets */
+    .hud-corners {
+      position: relative;
+    }
+    .hud-corners::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to right, #00f2fe 2px, transparent 2px) 0 0,
+        linear-gradient(to bottom, #00f2fe 2px, transparent 2px) 0 0,
+        linear-gradient(to left, #00f2fe 2px, transparent 2px) 100% 0,
+        linear-gradient(to bottom, #00f2fe 2px, transparent 2px) 100% 0,
+        linear-gradient(to right, #00f2fe 2px, transparent 2px) 0 100%,
+        linear-gradient(to top, #00f2fe 2px, transparent 2px) 0 100%,
+        linear-gradient(to left, #00f2fe 2px, transparent 2px) 100% 100%,
+        linear-gradient(to top, #00f2fe 2px, transparent 2px) 100% 100%;
+      background-repeat: no-repeat;
+      background-size: 10px 10px;
+      opacity: 0.45;
+    }
+
+    /* Animated Plasma Arc Pulse */
+    @keyframes plasmaPulse {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.7)) drop-shadow(0 0 22px rgba(168, 85, 247, 0.5)); }
+      50% { filter: drop-shadow(0 0 18px rgba(192, 132, 252, 0.95)) drop-shadow(0 0 38px rgba(0, 242, 254, 0.8)); }
+    }
+    .plasma-glow-text {
+      animation: plasmaPulse 4s infinite ease-in-out;
+    }
+
+    /* Scanline Overlay for Video Containers */
+    .video-hud-frame {
+      position: relative;
+      border-radius: 0.875rem;
+      overflow: hidden;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: #020408;
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.1);
+    }
+
+    /* Custom Tab Active State */
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(168, 85, 247, 0.18));
+      border-color: rgba(0, 242, 254, 0.6);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.18);
+    }
+
+    /* Certificate Filter Pill Active */
+    .cert-filter.active {
+      background: #00f2fe;
+      color: #04070d;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.45);
+    }
+
+    /* Marquee Ticker */
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-ticker {
+      display: flex;
+      width: max-content;
+      animation: ticker 36s linear infinite;
+    }
+    .animate-ticker:hover {
+      animation-play-state: paused;
+    }
+
+    /* High-Voltage PWM Slider */
+    input[type="range"].pwm-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0ea5e9 0%, #00f2fe 45%, #b537f2 80%, #f43f5e 100%);
+      outline: none;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.25);
+    }
+    input[type="range"].pwm-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #00f2fe;
+      box-shadow: 0 0 16px rgba(0, 242, 254, 0.9), 0 0 28px rgba(181, 55, 242, 0.6);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].pwm-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+  </style>
+</head>
+
+<body class="bg-blueprint antialiased selection:bg-cyan-400 selection:text-slate-950 relative">
+
+  <!-- Interactive Background Particle / Circuit Canvas -->
+  <canvas id="circuitCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Ambient Nebulae -->
+  <div class="fixed top-[-12%] left-[-8%] w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[140px] pointer-events-none z-0"></div>
+  <div class="fixed top-[28%] right-[-10%] w-[580px] h-[580px] rounded-full bg-purple-600/10 blur-[150px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-[-12%] left-[20%] w-[500px] h-[500px] rounded-full bg-emerald-500/10 blur-[150px] pointer-events-none z-0"></div>
+
+  <!-- Copy Notification Toast -->
+  <div id="copyToast" class="fixed bottom-6 right-6 z-[120] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900/95 border border-cyan-400/60 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-mono text-xs">
+    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+    <span id="copyToastText">Copied to clipboard!</span>
+  </div>
+
+  <!-- Lightbox Modal for High-Res Inspection -->
+  <div id="lightboxModal" class="fixed inset-0 z-[110] hidden bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-6xl flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2 font-mono text-xs text-cyan-400">
+        <i data-lucide="scan-eye" class="w-4 h-4"></i>
+        <span>HIGH-RESOLUTION TELEMETRY & CREDENTIAL INSPECTOR // PRESS ESC TO CLOSE</span>
+      </div>
+      <button onclick="closeLightbox()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-red-500/20 border border-slate-700 hover:border-red-400 text-slate-200 hover:text-red-300 font-mono text-xs transition-all">
+        <i data-lucide="x" class="w-4 h-4"></i> CLOSE [ESC]
+      </button>
+    </div>
+    <div class="relative flex-1 w-full max-w-6xl flex items-center justify-center overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 p-3">
+      <img id="lightboxImg" src="" alt="High resolution preview" class="raw-upright max-h-[78vh] max-w-full object-contain rounded-lg shadow-2xl" />
+    </div>
+    <p id="lightboxCaption" class="mt-3 font-mono text-xs md:text-sm text-cyan-300 text-center max-w-3xl"></p>
+  </div>
+
+  <!-- Top Telemetry Status Bar -->
+  <div class="relative z-40 bg-slate-950/90 border-b border-slate-800/80 py-1.5 px-4 text-[11px] font-mono text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          SYS.ONLINE // SHARJAH, UAE
+        </span>
+        <span class="hidden sm:inline text-slate-600">|</span>
+        <span class="hidden sm:inline text-slate-300">SCHOOL: <strong class="text-white">Manarat Al Sharjah Private School</strong> (Grade 12 Senior)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="mailto:apivotanimator@gmail.com" class="hover:text-cyan-400 transition-colors flex items-center gap-1">
+          <i data-lucide="mail" class="w-3.5 h-3.5 text-cyan-400"></i> apivotanimator@gmail.com
+        </a>
+        <span class="text-slate-600">|</span>
+        <a href="tel:+971563205131" class="hover:text-cyan-400 transition-colors flex items-center gap-1">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-400"></i> +971 56 320 5131
+        </a>
+        <span class="hidden md:inline text-slate-600">|</span>
+        <span class="hidden md:inline text-amber-400 font-semibold">⚡ 243 WPM PEAK / 226 WPM 100% ACC</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Navigation Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-void/90 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[64px] py-2.5 flex items-center justify-between gap-3">
+      <a href="#top" class="flex items-center gap-2.5 group shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-purple-600 p-[1.5px] shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-400/40 transition-all shrink-0">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-mono font-bold text-cyan-400 text-xs tracking-tighter">
+            KA
+          </div>
+        </div>
+        <div class="shrink-0">
+          <div class="font-display font-bold text-white tracking-tight text-sm flex items-center gap-2 whitespace-nowrap">
+            <span>KENAN AL CHAYAH</span>
+            <span class="px-2 py-0.5 text-[10px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 rounded-full whitespace-nowrap shrink-0">CLASS OF 2027</span>
+          </div>
+          <div class="font-mono text-[10px] text-slate-400 tracking-wider uppercase whitespace-nowrap">
+            Embedded • 250kV Physics • Edge-AI Robotics
+          </div>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-1 font-mono text-[11px] xl:text-xs overflow-x-auto no-scrollbar py-1">
+        <a href="#ozocore" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">01.OzoCore</a>
+        <a href="#assistant-san" class="px-2.5 py-1.5 rounded-lg text-purple-300 hover:text-purple-200 bg-purple-500/10 border border-purple-500/25 hover:border-purple-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping shrink-0"></span>
+          <span>02.Assistant-San</span>
+        </a>
+        <a href="#eezybotarm" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">03.EEZYbotARM</a>
+        <a href="#rover" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">04.Desert_Rover</a>
+        <a href="#thermosync" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">05.ThermoSync</a>
+        <a href="#certificates" class="px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all whitespace-nowrap shrink-0">06.Certs[9]</a>
+        <a href="#exposure" class="px-2.5 py-1.5 rounded-lg text-pink-300 hover:text-pink-200 hover:bg-pink-500/10 transition-all whitespace-nowrap shrink-0">07.Exposure_&amp;_Speed</a>
+        <a href="#contact" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">08.Contact</a>
+      </nav>
+
+      <!-- Action CTA -->
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="#contact" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-[11px] xl:text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0">
+          <i data-lucide="send" class="w-3.5 h-3.5 shrink-0"></i>
+          <span>CONTACT / ADMISSIONS</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="relative z-10">
+
+    <!-- ===================================================================== -->
+    <!-- HERO SECTION                                                          -->
+    <!-- ===================================================================== -->
+    <section class="pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+
+        <!-- Left Column: Identity & Mission -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-xs font-mono text-cyan-300 shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>APPLICANT DOSSIER // UTOKYO (PEAK/MEXT) • KAIST • TSINGHUA • MIT</span>
+          </div>
+
+          <h1 class="font-display text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
+            I don’t just write code.<br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 plasma-glow-text">
+              I pot 250kV plasma multipliers &amp; build living machines.
+            </span>
+          </h1>
+
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl">
+            I’m <strong class="text-white">Kenan Hussam Eddin Al Chayah</strong> (كنان حسام الدين الشياح), a Grade 12 senior at
+            <strong class="text-cyan-300">Manarat Al Sharjah Private School</strong> in Sharjah, UAE. From soldering 30kV-rated Cockcroft-Walton high-voltage ladders (<strong class="text-white">15 ceramic capacitors &amp; 20 diodes</strong> driven by a <strong class="text-white">25kV AC 6–15V 65W module</strong>) encapsulated in epoxy resin to engineering dual-core <code class="text-cyan-300 font-mono text-sm">ESP32-S3</code> AI companions with 24GHz mmWave radar eye-tracking and 4-DOF kinematic robotic arms, I build full-stack physical systems from raw physics up.
+          </p>
+
+          <!-- Direct Contact & Location Quick Pills -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <button onclick="copyText('apivotanimator@gmail.com', 'Email apivotanimator@gmail.com copied!')" class="hud-card rounded-xl p-3 text-left group flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                  Direct Email <span class="text-cyan-400 group-hover:underline">[Copy]</span>
+                </div>
+                <div class="font-mono text-xs text-white truncate">apivotanimator@gmail.com</div>
+              </div>
+            </button>
+
+            <button onclick="copyText('+971 56 320 5131', 'Phone +971 56 320 5131 copied!')" class="hud-card rounded-xl p-3 text-left group flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <i data-lucide="phone-call" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                  UAE Mobile / WhatsApp <span class="text-emerald-400 group-hover:underline">[Copy]</span>
+                </div>
+                <div class="font-mono text-xs text-white truncate">+971 56 320 5131</div>
+              </div>
+            </button>
+
+            <a href="https://www.google.com/maps/search/?api=1&query=Manarat+Al+Sharjah+Private+School+Sharjah" target="_blank" rel="noopener" class="hud-card rounded-xl p-3 text-left group flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-mono text-[10px] text-slate-400 uppercase flex items-center gap-1">
+                  School Location <span class="text-purple-400 group-hover:underline">[Maps ↗]</span>
+                </div>
+                <div class="font-mono text-xs text-white truncate">Manarat Al Sharjah School</div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Key Metric Bento Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-cyan-400 uppercase">Peak Reactor Potential</div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white mt-0.5">250 kV</div>
+              <div class="font-mono text-[11px] text-slate-400">15 Caps + 20 Diodes (30kV)</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-purple-400 uppercase">Verified Honors</div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white mt-0.5">9 Certs</div>
+              <div class="font-mono text-[11px] text-slate-400">MOE • TDRA • IEEE • AUS</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-emerald-400 uppercase">Execution Velocity</div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white mt-0.5">243 WPM</div>
+              <div class="font-mono text-[11px] text-slate-400">226 WPM @ 100% Acc</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-amber-400 uppercase">Hardware Systems</div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white mt-0.5">5 Builds</div>
+              <div class="font-mono text-[11px] text-slate-400">4 Completed + 1 Active</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <a href="#ozocore" class="px-5 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-display font-bold text-sm shadow-xl shadow-cyan-500/20 flex items-center gap-2 transition-all">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              Explore Flagship Builds
+            </a>
+            <a href="ozocore_portfolio.html" class="px-4 py-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 font-mono text-xs flex items-center gap-2 transition-all">
+              <i data-lucide="external-link" class="w-4 h-4 text-cyan-400"></i>
+              Full OzoCore Dossier Page ↗
+            </a>
+            <a href="#assistant-san" class="px-4 py-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-400/40 text-purple-200 font-mono text-xs flex items-center gap-2 transition-all">
+              <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i>
+              ASSISTANT-SAN (Gemini Live)
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Dual-Video & Live Hardware Showcase -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="hud-card hud-corners rounded-2xl p-4 border-cyan-500/30">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="font-mono text-xs font-bold text-white tracking-wider uppercase">LIVE LAB REEL // SWITCH FEED</span>
+              </div>
+              <div class="flex items-center gap-1 bg-slate-950/90 p-1 rounded-lg border border-slate-800 font-mono text-[11px]">
+                <button onclick="switchHeroVideo('ozocore')" id="heroBtnOzo" class="px-2.5 py-1 rounded bg-cyan-400 text-slate-950 font-bold transition-all">
+                  250kV Arc + Resin
+                </button>
+                <button onclick="switchHeroVideo('eezy')" id="heroBtnEezy" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">
+                  EEZYbotARM Live
+                </button>
+              </div>
+            </div>
+
+            <!-- Video Player 1: new5.mp4 (OzoCore HV Arc + Resin Potting) -->
+            <div id="heroVidOzoWrap" class="video-hud-frame">
+              <video id="heroVidOzo" controls preload="metadata" playsinline class="w-full h-[300px] sm:h-[340px] object-cover bg-black">
+                <source src="new5.mp4" type="video/mp4" />
+              </video>
+              <div class="p-3 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between gap-2">
+                <div>
+                  <div class="font-mono text-xs text-cyan-400 font-semibold">BEHIND THE SCENES: OZOCORE HV MULTIPLIER</div>
+                  <p class="text-[11px] text-slate-400">Testing raw 250kV corona discharge arc on silicone mat, then encapsulating the 30kV-rated 15-cap / 20-diode ladder in clear two-part epoxy resin.</p>
+                </div>
+                <span class="px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/30 font-mono text-[10px] text-cyan-300 shrink-0">new5.mp4</span>
+              </div>
+            </div>
+
+            <!-- Video Player 2: NEW4.mp4 (EEZYbotARM MK2 Competition Live Run) -->
+            <div id="heroVidEezyWrap" class="video-hud-frame hidden">
+              <video id="heroVidEezy" controls preload="metadata" playsinline class="w-full h-[300px] sm:h-[340px] object-cover bg-black">
+                <source src="NEW4.mp4" type="video/mp4" />
+              </video>
+              <div class="p-3 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between gap-2">
+                <div>
+                  <div class="font-mono text-xs text-purple-400 font-semibold">LIVE COMPETITION RUN: EEZYbotARM MK2</div>
+                  <p class="text-[11px] text-slate-400">Operating the white 3D-printed 4-DOF EEZYbotARM MK2 via laptop C++ serial controller in front of exhibition judges.</p>
+                </div>
+                <span class="px-2 py-1 rounded bg-purple-500/10 border border-purple-500/30 font-mono text-[10px] text-purple-300 shrink-0">NEW4.mp4</span>
+              </div>
+            </div>
+
+            <!-- Mini Thumbnail Strip Below Hero Video -->
+            <div class="grid grid-cols-4 gap-2.5 mt-3">
+              <button onclick="openLightbox('IMG-20260128-WA0008.jpg', 'OzoCore Final Console — Dual OLEDs, 2.8-inch ILI9341 TFT, 7-Segment Voltmeter & Acrylic Plasma Chamber')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-cyan-400 h-16">
+                <img src="IMG-20260128-WA0008.jpg" alt="OzoCore Console" class="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] font-mono text-cyan-300 py-0.5 text-center">OzoCore HUD</span>
+              </button>
+              <button onclick="openLightbox('eezybotarm_mk2_upright.jpg', 'Assembled White 3D-Printed EEZYbotARM MK2 (1:7 Scale ABB IRB460 Kinematics) Wired to Arduino Uno R3')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-cyan-400 h-16">
+                <img src="eezybotarm_mk2_upright.jpg" alt="EEZYbotARM MK2" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] font-mono text-purple-300 py-0.5 text-center">EEZYbot MK2</span>
+              </button>
+              <button onclick="openLightbox('f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg', 'Smart Desert Reclaimer Rover — 4-Wheel Aluminum Deck, Sheet-Metal Soil Probe Arm, Camera Mast & NRF24L01+ Telemetry')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-cyan-400 h-16">
+                <img src="f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg" alt="Desert Rover" class="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] font-mono text-emerald-300 py-0.5 text-center">Desert Rover</span>
+              </button>
+              <button onclick="openLightbox('thermosync_poster_upright.jpg', 'THERMOSYNC — AUS Sharakah x Net Impact Sustainability Challenge 2026 Architectural Poster')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-cyan-400 h-16">
+                <img src="thermosync_poster_upright.jpg" alt="THERMOSYNC Poster" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] font-mono text-amber-300 py-0.5 text-center">ThermoSync</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Live Engineering Spec Ticker -->
+    <div class="border-y border-slate-800/80 bg-slate-950/90 py-2.5 overflow-hidden font-mono text-xs text-slate-400">
+      <div class="animate-ticker flex items-center gap-8">
+        <span class="flex items-center gap-2"><strong class="text-cyan-400">[01 // OZOCORE]</strong> 250kV CW Multiplier (30kV-Rated 15 Ceramic Caps + 20 Diodes) • 25kV AC 6–15V 65W Driver • Rack &amp; Pinion Controllable Electrodes • 9-Sensor ESP32 Safety</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-purple-400">[02 // ASSISTANT-SAN]</strong> ESP32-S3-N16R8 • Gemini Multimodal Live API • HLK-LD2450 24GHz mmWave Radar Eye-Tracking @ 35+ FPS</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-amber-400">[03 // EEZYBOTARM MK2]</strong> 1:7 Scale ABB IRB 460 Palletizing Kinematics • 4-DOF Parallelogram Linkage • 4th Place Winner</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-emerald-400">[04 // DESERT ROVER]</strong> Raspberry Pi MobileNet V2 Vision + Arduino Uno + NRF24L01+ 2.4GHz Soil Telemetry</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-cyan-400">[05 // THERMOSYNC 2026]</strong> BACnet/IP Timetable HVAC Sync • -1,000t CO2/yr • AED 1.1M/yr Saved at AUS Sharakah</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-pink-400">[EXPOSURE]</strong> BUILDEX Damascus 2025 (Fieldwork &amp; Industrial Booth Logistics) • GITEX Expand North Star (Dubai Harbour Deep-Tech)</span>
+        <span class="text-slate-700">///</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="flex items-center gap-2"><strong class="text-cyan-400">[01 // OZOCORE]</strong> 250kV CW Multiplier (30kV-Rated 15 Ceramic Caps + 20 Diodes) • 25kV AC 6–15V 65W Driver • Rack &amp; Pinion Controllable Electrodes • 9-Sensor ESP32 Safety</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-purple-400">[02 // ASSISTANT-SAN]</strong> ESP32-S3-N16R8 • Gemini Multimodal Live API • HLK-LD2450 24GHz mmWave Radar Eye-Tracking @ 35+ FPS</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-amber-400">[03 // EEZYBOTARM MK2]</strong> 1:7 Scale ABB IRB 460 Palletizing Kinematics • 4-DOF Parallelogram Linkage • 4th Place Winner</span>
+        <span class="text-slate-700">///</span>
+        <span class="flex items-center gap-2"><strong class="text-pink-400">[EXPOSURE]</strong> BUILDEX Damascus 2025 (Fieldwork &amp; Industrial Booth Logistics) • GITEX Expand North Star (Dubai Harbour Deep-Tech)</span>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- PROJECT 01: OZOCORE (250kV HIGH-VOLTAGE PLASMA REACTOR)               -->
+    <!-- ===================================================================== -->
+    <section id="ozocore" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <div class="inline-flex items-center gap-2 font-mono text-xs text-cyan-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30">PROJECT 01 // FLAGSHIP HARDWARE</span>
+            <span>• 25kV AC (6–15V 65W) DRIVER + 30kV CW MULTIPLIER</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight flex flex-wrap items-center gap-4">
+            <span>OzoCore: 250kV Cold-Plasma Reactor</span>
+            <img src="file_000000003d3c71f5a85fb76ab88dbfcd.png" alt="OzoCore Official Logo" class="h-10 sm:h-12 w-auto rounded-lg border border-cyan-500/30 bg-slate-950 px-2 py-1" />
+          </h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <span class="px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">25kV AC (6–15V / 65W Max)</span>
+          <span class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-300">30kV-Rated: 15 Caps + 20 Diodes</span>
+          <span class="px-3 py-1.5 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-300 flex items-center gap-1.5">
+            <i data-lucide="cog" class="w-3.5 h-3.5 text-pink-400"></i>
+            <span>Rack &amp; Pinion Controllable Electrodes</span>
+          </span>
+          <a href="ozocore_portfolio.html" class="px-3.5 py-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 transition-all">
+            <span>Full OzoCore Dossier</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Main OzoCore Bento Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left 7 Columns: Physics, Chemistry, Tabs & Single-Slider 6-15V Modeled Simulator -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="hud-card rounded-2xl p-6 sm:p-8">
+            <!-- Interactive Tab Switcher -->
+            <div class="flex flex-wrap gap-2 pb-5 mb-6 border-b border-slate-800 font-mono text-xs">
+              <button onclick="switchOzoTab('physics')" id="ozoTabBtn-physics" class="tab-btn active px-3.5 py-2 rounded-lg border border-slate-700 text-slate-300 transition-all">
+                01 // 25kV Driver &amp; 30kV CW Multiplier
+              </button>
+              <button onclick="switchOzoTab('potting')" id="ozoTabBtn-potting" class="tab-btn px-3.5 py-2 rounded-lg border border-slate-700 text-slate-300 transition-all">
+                02 // Resin Potting &amp; 6 War Stories
+              </button>
+              <button onclick="switchOzoTab('bus')" id="ozoTabBtn-bus" class="tab-btn px-3.5 py-2 rounded-lg border border-slate-700 text-slate-300 transition-all">
+                03 // 9 Sensors, 4 Displays &amp; Safety
+              </button>
+            </div>
+
+            <!-- TAB 1: Plasma Physics & CW Multiplier Specs -->
+            <div id="ozoTab-physics" class="space-y-5">
+              <h3 class="font-display text-2xl font-bold text-white">
+                Synthesizing O<sub>3</sub> via a 25kV AC (65W) Driver &amp; 30kV-Rated CW Cascade
+              </h3>
+              <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                I engineered <strong class="text-white">OzoCore</strong> as a self-contained high-voltage plasma reactor inside a sealed <strong class="text-white">25 × 25 × 25 cm (15.625 L)</strong> clear acrylic chamber. Output power is governed by a front manual <strong class="text-cyan-300">PWM voltage knob (6.0 V to 15.0 V)</strong> feeding a <strong class="text-white">25 kV AC high-frequency driver module (65 W max output)</strong>. That 25 kV AC output drives a custom <strong class="text-purple-300">Cockcroft-Walton voltage multiplier built from 30 kV-rated parts — 15 ceramic capacitors and 20 high-voltage diodes</strong> — vacuum-encapsulated in clear epoxy resin to reach <strong class="text-cyan-300">~250 kV peak potential</strong> across <strong class="text-pink-300">controllable dual electrodes mounted on a precision rack-and-pinion drive</strong> (enabling continuous mechanical gap spacing adjustment to tune Paschen breakdown voltage and prevent thermal arc-over).
+              </p>
+
+              <!-- Reaction Equations & Hardware Spec Box -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div class="p-4 rounded-xl bg-slate-950/90 border border-cyan-500/30">
+                  <div class="font-mono text-[10px] text-cyan-400 uppercase mb-1">Stage 1 // HV Driver &amp; CW Multiplier</div>
+                  <div class="font-mono text-sm text-white font-semibold">
+                    6–15V PWM → 25kV AC (65W) → ~250kV DC
+                  </div>
+                  <p class="text-xs text-slate-400 mt-1.5">
+                    Built with <strong class="text-white">30 kV-rated components (15 ceramic capacitors + 20 HV diodes)</strong> potted in solid epoxy resin (~20 kV/mm dielectric strength) to prevent stage-to-stage air flashover.
+                  </p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-950/90 border border-purple-500/30">
+                  <div class="font-mono text-[10px] text-purple-400 uppercase mb-1">Stage 2 // Corona Dissociation &amp; Safety</div>
+                  <div class="font-mono text-sm text-white font-semibold">
+                    e⁻ + O₂ → 2O• &nbsp;|&nbsp; O• + O₂ + M → O₃ + M
+                  </div>
+                  <p class="text-xs text-slate-400 mt-1.5">
+                    Synthesizes ozone inside the 15.625 L chamber while an <code class="text-cyan-300 font-mono">SC01-O3</code> sensor triggers a warning at <strong class="text-amber-300">6 ppm</strong> and automatically cuts the HV relay at <strong class="text-red-400">8 ppm</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Key Subsystem Specs (4 Badges) -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-xs">
+                <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+                  <span class="text-slate-400 block text-[10px]">9 SAFETY SENSORS</span>
+                  <span class="text-white font-semibold">SC01-O3 • MQ-135 • MQ-2 • 4×US</span>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+                  <span class="text-slate-400 block text-[10px]">ELECTRODE ACTUATION</span>
+                  <span class="text-pink-300 font-semibold">Rack &amp; Pinion Gap Drive</span>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+                  <span class="text-slate-400 block text-[10px]">4 DISPLAYS + RING</span>
+                  <span class="text-emerald-400 font-semibold">2.8&quot; TFT • 3× OLED • 24-LED</span>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+                  <span class="text-slate-400 block text-[10px]">4 SHUT-OFF PATHS</span>
+                  <span class="text-amber-400 font-semibold">2× Switches • PWM • Relay</span>
+                </div>
+              </div>
+
+              <!-- Competition Context Note: Regional Conflict Cancellations -->
+              <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-400/40 mt-3 space-y-3">
+                <div class="flex items-start gap-3.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                  </div>
+                  <div class="text-xs leading-relaxed text-slate-200">
+                    <div class="font-mono font-bold text-amber-300 uppercase tracking-wider mb-0.5">
+                      COMPETITION CONTEXT // WHY OZOCORE HAS NO EXTERNAL TROPHY RECORD
+                    </div>
+                    <p class="text-slate-300">
+                      OzoCore was engineered and completed last academic year as my most ambitious flagship reactor to date. However, due to regional geopolitical escalations (<strong class="text-white">the Iran–USA conflict</strong>), all major external national and inter-emirate science &amp; engineering competitions scheduled for that cycle were officially cancelled across the region. Rather than shelving the reactor, I demonstrated it live at the <strong class="text-amber-300">Al-Shola 29th Innovation Exhibition</strong> (where live telemetry reached <code class="text-cyan-300 font-mono">4.77 ppm O₃</code>) and published its full engineering dossier in <a href="ozocore_portfolio.html" class="text-cyan-300 underline hover:text-white font-semibold">ozocore_portfolio.html</a>.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Verified Competition Booth Photo -->
+                <div onclick="openLightbox('ozocore_competition_booth.jpg', 'Al-Shola 29th Innovation Exhibition: Project Identification Board #17 (School Name: Manarat Al Sharjah Private School, Cycle 3 - AI for Life, Project Title: OZOcore - smart ozone generator)')" class="group cursor-pointer rounded-xl overflow-hidden border border-amber-500/30 bg-slate-950/90 flex flex-col sm:flex-row items-center gap-3 p-2.5 hover:border-amber-400 transition-all">
+                  <img src="ozocore_competition_booth.jpg" alt="OzoCore Competition Booth" class="raw-upright w-full sm:w-28 h-24 object-cover rounded-lg group-hover:scale-105 transition-transform" />
+                  <div class="text-xs">
+                    <div class="font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                      <span>AL-SHOLA EXHIBITION BOOTH // PROJECT IDENTIFICATION BOARD #17</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">
+                      Official booth display at Manarat Al Sharjah Private School with presentation laptop, full OzoCore assembly, and Project Identification Board #17 (Cycle 3 – AI for Life).
+                    </p>
+                    <span class="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400 mt-1 underline">Click to inspect official booth board ↗</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: Resin Potting & Debugging War Stories -->
+            <div id="ozoTab-potting" class="space-y-4 hidden">
+              <h3 class="font-display text-2xl font-bold text-white">
+                Key Hardware &amp; Firmware Debugging War Stories
+              </h3>
+              <div class="space-y-3">
+                <div class="p-4 rounded-xl bg-slate-950/90 border-l-4 border-purple-500">
+                  <div class="font-mono text-xs text-purple-400 font-bold">WAR STORY 01 // PARASITIC AIR BREAKDOWN ACROSS 15 CAPS &amp; 20 DIODES</div>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    When testing the bare 30kV-rated 15-capacitor / 20-diode ladder on the silicone mat, humid air (~3 kV/mm breakdown) permitted parasitic arcing between stages. <strong class="text-white">Solution:</strong> Vacuum-potting the entire cascade in <strong class="text-purple-300">two-part clear dielectric epoxy resin</strong> (~20 kV/mm dielectric strength) permanently eliminated external corona leakage and EMI resets.
+                  </p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-950/90 border-l-4 border-cyan-400">
+                  <div class="font-mono text-xs text-cyan-400 font-bold">WAR STORY 02 // 38-PIN ESP32 PIN EXHAUSTION &amp; 3× 0x3C OLED COLLISIONS</div>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    Driving 9 sensors and 4 displays pushed the 38-pin ESP32 to its physical GPIO limit, and all three 0.96&quot; SSD1306 OLEDs shared address <code class="text-cyan-300 font-mono">0x3C</code>. <strong class="text-white">Solution:</strong> Mapped <code class="text-cyan-300 font-mono">GPIO 34–39</code> strictly as input-only ADC/echo lines, split I²C buses, and wrote a zero-<code class="text-cyan-300 font-mono">delay()</code> round-robin state machine.
+                  </p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-950/90 border-l-4 border-emerald-400">
+                  <div class="font-mono text-xs text-emerald-400 font-bold">WAR STORY 03 // WHITE-SCREEN IR BUG &amp; PHANTOM 10 PPM SATURATION</div>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    Fixed an inverted IR chamber-lift boolean that locked the 2.8&quot; TFT in emergency mode, and resolved a misrouted <code class="text-cyan-300 font-mono">SC01-O3</code> analog line that caused false <code class="text-red-300 font-mono">10 ppm</code> saturation in clean air.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 3: 9 Sensors, 4 Displays & Safety Thresholds -->
+            <div id="ozoTab-bus" class="space-y-4 hidden">
+              <h3 class="font-display text-2xl font-bold text-white">
+                9-Sensor Safety Thresholds &amp; 4-Display Bus Architecture
+              </h3>
+              <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full text-left font-mono text-xs">
+                  <thead class="bg-slate-950 text-cyan-400 border-b border-slate-800">
+                    <tr>
+                      <th class="p-3">SENSOR / BUS</th>
+                      <th class="p-3 text-amber-400">WARNING</th>
+                      <th class="p-3 text-red-400">AUTO HV CUT-OFF</th>
+                      <th class="p-3">ROLE IN REACTOR</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/70 bg-slate-900/50 text-slate-300">
+                    <tr>
+                      <td class="p-3 font-bold text-white">SC01-O3 (0–10 ppm)</td>
+                      <td class="p-3 text-amber-300">≥ 6.0 ppm</td>
+                      <td class="p-3 text-red-300 font-bold">≥ 8.0 ppm (Relay OFF)</td>
+                      <td class="p-3">Electrochemical chamber O₃ monitor</td>
+                    </tr>
+                    <tr>
+                      <td class="p-3 font-bold text-white">MQ-135 &amp; MQ-2</td>
+                      <td class="p-3 text-amber-300">≥ 2000 ADC</td>
+                      <td class="p-3 text-red-300 font-bold">≥ 3000 ADC (Relay OFF)</td>
+                      <td class="p-3">Air quality &amp; smoke/insulation fault check</td>
+                    </tr>
+                    <tr>
+                      <td class="p-3 font-bold text-white">DHT22 (Temp/Hum)</td>
+                      <td class="p-3 text-amber-300">30°C / 80%</td>
+                      <td class="p-3 text-red-300 font-bold">35°C / 90% (Relay OFF)</td>
+                      <td class="p-3">Prevents thermal runaway &amp; humid arcing</td>
+                    </tr>
+                    <tr>
+                      <td class="p-3 font-bold text-white">IR + 4× HC-SR04</td>
+                      <td class="p-3 text-amber-300">&lt; 30 cm Buzzer</td>
+                      <td class="p-3 text-red-300 font-bold">Lid Lift → Instant Cut</td>
+                      <td class="p-3">Optical lid interlock + 360° perimeter sonar</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SINGLE-SLIDER (6V to 15V PWM) MODELED PERFORMANCE PANEL IN INDEX.HTML -->
+          <div class="hud-card hud-corners rounded-2xl p-6 border-cyan-500/40 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div>
+                <div class="font-mono text-[10px] text-amber-300 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="sliders" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  <span>SINGLE-SLIDER INTERACTIVE MODEL // MODELED VALUES BASED ON HARDWARE SPECS</span>
+                </div>
+                <h4 class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">
+                  Front Manual PWM Knob (<code class="text-cyan-300 font-mono">6.0 V – 15.0 V</code>) vs. Ozone Output
+                </h4>
+                <p class="text-xs text-slate-400">
+                  Modeled from OzoCore’s <strong class="text-white">25 kV AC module (6–15V, 65W max)</strong>, <strong class="text-purple-300">30kV-rated 15-cap / 20-diode CW multiplier</strong>, <strong class="text-pink-300">rack-and-pinion controllable electrode gap</strong>, <strong class="text-white">15.625 L chamber</strong>, and <strong class="text-red-400">8.0 ppm automatic relay cut-off</strong>.
+                </p>
+              </div>
+              <div class="px-3.5 py-2 rounded-xl bg-black border border-cyan-400/60 text-right shrink-0">
+                <div class="font-mono text-[9px] text-slate-400 uppercase">PWM KNOB VOLTAGE</div>
+                <div id="idxPwmVoltReadout" class="font-mono text-2xl font-extrabold text-cyan-300">15.0 V</div>
+              </div>
+            </div>
+
+            <!-- The Single 6V - 15V Slider -->
+            <div>
+              <input id="idxPwmSlider" type="range" min="6.0" max="15.0" step="0.5" value="15.0" class="pwm-slider" />
+              <div class="flex justify-between font-mono text-[10px] text-slate-400 mt-1.5">
+                <span>6.0 V (~10.4W)</span>
+                <span>9.0 V (~23.4W)</span>
+                <span>12.0 V (~41.6W)</span>
+                <span>15.0 V (65.0W Max / ~250kV)</span>
+              </div>
+            </div>
+
+            <!-- 4 Live Modeled Metric Pills -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <span class="text-[9px] text-cyan-400 uppercase block">25kV Driver Output</span>
+                <span id="idxMetricPower" class="text-white font-bold text-sm">65.0 W</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <span class="text-[9px] text-purple-400 uppercase block">Est. CW Potential</span>
+                <span id="idxMetricKv" class="text-purple-300 font-bold text-sm">~250 kV</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <span class="text-[9px] text-emerald-400 uppercase block">O₃ @ t = 60s</span>
+                <span id="idxMetricO3" class="text-emerald-300 font-bold text-sm">5.00 ppm</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <span class="text-[9px] text-red-400 uppercase block">8 ppm Relay Cut-Off</span>
+                <span id="idxMetricCutoff" class="text-red-300 font-bold text-sm">1.6 min</span>
+              </div>
+            </div>
+
+            <!-- 2 Modeled Charts Updated by Single Slider -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-[11px] text-cyan-400 font-bold uppercase">Modeled Chamber O₃ (0–10 min)</span>
+                  <span class="font-mono text-[9px] text-slate-400">8 ppm Auto Cut-Off</span>
+                </div>
+                <div class="h-48">
+                  <canvas id="ozoKineticsChart"></canvas>
+                </div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-[11px] text-purple-400 font-bold uppercase">Driver Power (65W Max) &amp; CW kV</span>
+                  <span class="font-mono text-[9px] text-slate-400">6V–15V Sweep</span>
+                </div>
+                <div class="h-48">
+                  <canvas id="ozoPowerChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 Columns: Complete OzoCore Image & CAD Gallery (22 Items, Zero Videos) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="hud-card hud-card-plasma rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-mono text-xs text-cyan-400 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="images" class="w-4 h-4 text-purple-400"></i>
+                  <span>OZOCORE IMAGE &amp; CAD GALLERY (24 ITEMS)</span>
+                </span>
+                <span class="font-mono text-[10px] text-slate-400">CLICK TO ENLARGE</span>
+              </div>
+              <p class="text-xs text-slate-400 mb-3">
+                Filter all 24 verified OzoCore CAD renders, 30kV 15-cap/20-diode CW multiplier photos, 3D printing stages, and live exhibition telemetry displays:
+              </p>
+
+              <!-- Compact Category Filter Pills -->
+              <div class="flex flex-wrap gap-1.5 mb-3 font-mono text-[10px]">
+                <button onclick="filterIdxOzoGallery('all')" id="idxOzoGalBtn-all" class="tab-btn active px-2.5 py-1 rounded-lg border border-slate-700 text-slate-300">All [24]</button>
+                <button onclick="filterIdxOzoGallery('cad')" id="idxOzoGalBtn-cad" class="tab-btn px-2.5 py-1 rounded-lg border border-slate-700 text-slate-300">3D CAD [5]</button>
+                <button onclick="filterIdxOzoGallery('cw')" id="idxOzoGalBtn-cw" class="tab-btn px-2.5 py-1 rounded-lg border border-slate-700 text-slate-300">30kV CW &amp; Arc [4]</button>
+                <button onclick="filterIdxOzoGallery('fab')" id="idxOzoGalBtn-fab" class="tab-btn px-2.5 py-1 rounded-lg border border-slate-700 text-slate-300">3D Print &amp; Proto [4]</button>
+                <button onclick="filterIdxOzoGallery('reactor')" id="idxOzoGalBtn-reactor" class="tab-btn px-2.5 py-1 rounded-lg border border-slate-700 text-slate-300">Reactor &amp; HUD [11]</button>
+              </div>
+
+              <!-- Scrollable 22-Item Gallery Grid inside #ozocore -->
+              <div id="idxOzoGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[640px] overflow-y-auto pr-1">
+                <!-- CAD (5) -->
+                <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100737.png', 'CAD 01: Parametric 3D CAD Isometric Render of OzoCore Chamber, Base & Top Solar Array')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="Screenshot 2026-10-25 100737.png" alt="CAD Isometric" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">01. CAD Isometric</div>
+                </div>
+                <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100751.png', 'CAD 02: Front Telemetry Console Cutouts for 2.8-inch TFT, Dual OLEDs & 7-Seg Voltmeter')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="Screenshot 2026-10-25 100751.png" alt="CAD Front Panel" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">02. CAD Front Console</div>
+                </div>
+                <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100756.png', 'CAD 03: Rear Enclosure & Perimeter Ultrasonic Sensor Mounts')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="Screenshot 2026-10-25 100756.png" alt="CAD Rear View" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">03. CAD Rear Chassis</div>
+                </div>
+                <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100800.png', 'CAD 04: Top-Angle Reaction Chamber & Internal Sensor Deck')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="Screenshot 2026-10-25 100800.png" alt="CAD Chamber Deck" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">04. CAD Chamber Deck</div>
+                </div>
+                <div data-cat="cad" onclick="openLightbox('2dc9cc24-c64d-442d-8b9c-dcc9b50f2714.jpg', 'CAD 05: 3D Wireframe Enclosure Modeling on Laptop')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="2dc9cc24-c64d-442d-8b9c-dcc9b50f2714.jpg" alt="CAD Wireframe" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">05. 3D Wireframe CAD</div>
+                </div>
+
+                <!-- 30kV CW Multiplier & Plasma (4) -->
+                <div data-cat="cw" onclick="openLightbox('5c553847-0efb-46fc-855b-c03f0d9de66f.jpg', 'CW 06: Hand-Soldering 30kV-Rated 15 Ceramic Capacitors & 20 Diodes on Silicone Mat')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
+                  <img src="5c553847-0efb-46fc-855b-c03f0d9de66f.jpg" alt="15 Caps 20 Diodes" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">06. 15 Caps + 20 Diodes</div>
+                </div>
+                <div data-cat="cw" onclick="openLightbox('20250829_222318.jpg', 'CW 07: Completed 30kV Cockcroft-Walton Cascade with Brass Electrode Tip')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
+                  <img src="20250829_222318.jpg" alt="CW Ladder Bench" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">07. Full 30kV CW Ladder</div>
+                </div>
+                <div data-cat="cw" onclick="openLightbox('20250901_144443.jpg', 'CW 08: Violet Corona Ionization Glow at the Brass/Wire Electrode Interface')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
+                  <img src="20250901_144443.jpg" alt="Corona Glow" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">08. Corona Ionization</div>
+                </div>
+                <div data-cat="cw" onclick="openLightbox('20250901_183740.jpg', 'CW 09: 250kV Purple Corona Plasma Discharge Streamer in Dark-Room Test')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-pink-400 bg-slate-950">
+                  <img src="20250901_183740.jpg" alt="250kV Corona Arc" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">09. 250kV Plasma Arc</div>
+                </div>
+
+                <!-- 3D Print & Proto (4) -->
+                <div data-cat="fab" onclick="openLightbox('20250914_200515.jpg', 'FAB 10: ESP32 Breadboard Prototype Polling DHT22 & Graphing on SSD1306 OLED')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                  <img src="20250914_200515.jpg" alt="ESP32 Breadboard" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">10. ESP32 Breadboard</div>
+                </div>
+                <div data-cat="fab" onclick="openLightbox('20250930_162354.jpg', 'FAB 11: 2.8-inch ILI9341 240×320 SPI Color TFT Display Module')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                  <img src="20250930_162354.jpg" alt="2.8 inch TFT" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">11. 2.8&quot; ILI9341 TFT</div>
+                </div>
+                <div data-cat="fab" onclick="openLightbox('c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg', 'FAB 12: FDM 3D Printing the Matte-Black PLA OzoCore Base on PEI Build Plate')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                  <img src="c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg" alt="3D Printing Base" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">12. 3D Printing Base</div>
+                </div>
+                <div data-cat="fab" onclick="openLightbox('20260110_182314.jpg', 'FAB 13: First-Layer PLA Extrusion Calibration on Textured PEI Bed')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                  <img src="20260110_182314.jpg" alt="First Layer Print" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">13. PEI Bed Adhesion</div>
+                </div>
+
+                <!-- Final Reactor & Live Telemetry (9) -->
+                <div data-cat="reactor" onclick="openLightbox('IMG-20260121-WA0006.jpg', 'REACTOR 14: Lab Dry-Fit of 25×25×25 cm Acrylic Chamber on 3D-Printed Base')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="IMG-20260121-WA0006.jpg" alt="Lab Dry Fit" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">14. Chamber Dry-Fit</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0003.jpg', 'REACTOR 15: Controllable Corona Discharge Electrodes Mounted on Rack &amp; Pinion Drive Inside Sealed Chamber')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="IMG-20260128-WA0003.jpg" alt="Rack and Pinion Electrodes" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">15. Rack &amp; Pinion Electrodes</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0001.jpg', 'REACTOR 16: Front Elevation of OzoCore Console, Electrodes & Potted CW Block')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="IMG-20260128-WA0001.jpg" alt="Front Elevation" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">16. Front Elevation</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('IMG-20260126-WA0000.jpg', 'REACTOR 17: Full OzoCore Assembly in Lab with Top Solar Panel & Epoxy-Potted CW Block')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="IMG-20260126-WA0000.jpg" alt="Full Reactor in Lab" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">17. Solar + CW Reactor</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('20260126_135727.jpg', 'REACTOR 18: Clear Epoxy-Resin Potted 30kV CW Multiplier Block & HV Leads')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="20260126_135727.jpg" alt="Epoxy CW Block" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">18. Epoxy CW Block</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0008.jpg', 'REACTOR 19: Powered Console Running at 12.6V PWM Input with Green Status Ring')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="IMG-20260128-WA0008.jpg" alt="12.6V Console" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">19. 12.6V Live Console</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('20260126_133636.jpg', 'REACTOR 20: Close-Up of 2.8-inch TFT Telemetry UI & 12.6V Voltmeter')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="20260126_133636.jpg" alt="TFT Close Up" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">20. TFT Dashboard UI</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('20260520_095443.jpg', 'REACTOR 21: Live Exhibition Telemetry Reading O3: 4.77 ppm, Temp: 24.7°C, Hum: 45.5%, CHAMBER: SECURED')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="20260520_095443.jpg" alt="Expo Live 4.77 ppm" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">21. Expo: 4.77 ppm O₃</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('20260520_095415.jpg', 'REACTOR 22: Internal Sensor Bank (SC01-O3, MQ-135, MQ-2, DHT22) Inside Acrylic Chamber')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="20260520_095415.jpg" alt="Internal Sensor Bank" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">22. Internal Sensors</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('ozocore_full_body.jpg', 'REACTOR 23: Full-Body Architecture — 250kV Sealed Acrylic Reaction Chamber, Corona Electrodes, 3D-Printed Console & Multiplier')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                  <img src="ozocore_full_body.jpg" alt="OzoCore Full Body" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">23. Full-Body Reactor</div>
+                </div>
+                <div data-cat="reactor" onclick="openLightbox('ozocore_competition_booth.jpg', 'REACTOR 24: Al-Shola 29th Innovation Exhibition Booth — Official Project Identification Board #17 (Cycle 3 - AI for Life)')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                  <img src="ozocore_competition_booth.jpg" alt="OzoCore Exhibition Booth" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">24. Exhibition Booth #17</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prominent Link Card to Standalone ozocore_portfolio.html -->
+            <div class="mt-5 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="text-xs text-slate-300">
+                <strong class="text-white block">Want the full 4-graph simulator &amp; 6 debugging war stories?</strong>
+                <span class="text-slate-400">Open the dedicated OzoCore standalone engineering dossier.</span>
+              </div>
+              <a href="ozocore_portfolio.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-mono font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/20 shrink-0 transition-all">
+                <span>Open ozocore_portfolio.html</span>
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PROJECT 02: ASSISTANT-SAN (UPCOMING FLAGSHIP — GEMINI LIVE + RADAR)   -->
+    <!-- ===================================================================== -->
+    <section id="assistant-san" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="hud-card hud-card-plasma rounded-3xl p-6 sm:p-10 border-purple-500/40 relative overflow-hidden">
+        <!-- Ambient Glow -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 relative z-10">
+          <div>
+            <div class="inline-flex flex-wrap items-center gap-2 font-mono text-xs text-purple-300 uppercase tracking-widest mb-2">
+              <span class="px-2.5 py-1 rounded-full bg-purple-500/20 border border-purple-400/50 text-purple-200 flex items-center gap-1.5 font-bold">
+                <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+                PROJECT 02 // UPCOMING FLAGSHIP (ACTIVE R&amp;D SPRINT)
+              </span>
+              <span>• FULL-DUPLEX VOICE AI &amp; 24GHz RADAR BIOMECHANICS</span>
+            </div>
+            <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+              ASSISTANT-SAN: Spatial-Tracking AI Companion
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+              A custom-engineered desktop AI robot powered by <strong class="text-cyan-300">ESP32-S3-WROOM-1-N16R8</strong> that streams real-time bidirectional voice directly to the <strong class="text-purple-300">Google Gemini Multimodal Live API</strong> while physically tracking human <code class="text-cyan-300 font-mono">(X, Y)</code> coordinates across the room at <strong class="text-emerald-300">35+ FPS</strong> using a <strong class="text-white">24 GHz HLK-LD2450 FMCW mmWave Radar</strong>.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 font-mono text-xs shrink-0">
+            <span class="px-3 py-1.5 rounded-lg bg-purple-500/15 border border-purple-400/40 text-purple-200">ESP32-S3 (16MB/8MB PSRAM)</span>
+            <span class="px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/40 text-cyan-200">24GHz mmWave Radar</span>
+            <span class="px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-400/40 text-emerald-200">Gemini Live WebSockets</span>
+          </div>
+        </div>
+
+        <!-- Architecture & Interactive Radar Eye Simulator Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+
+          <!-- Left 5 Columns: Interactive Simulated 2.8" ILI9341 TFT Eye-Tracking HUD -->
+          <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+            <div class="p-5 rounded-2xl bg-slate-950/95 border border-purple-500/40 shadow-2xl">
+              <div class="flex items-center justify-between font-mono text-[11px] text-slate-400 mb-3">
+                <span class="text-purple-300 font-bold flex items-center gap-1.5">
+                  <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  INTERACTIVE 24GHz RADAR EYE-TRACKING SIMULATOR
+                </span>
+                <span class="text-cyan-400">35+ FPS // MOVE CURSOR</span>
+              </div>
+
+              <!-- Simulated 2.8" ILI9341 Screen (320x240 aspect) -->
+              <div id="assistantFaceScreen" class="relative w-full h-56 rounded-xl bg-[#03060c] border-2 border-slate-800 flex flex-col items-center justify-center overflow-hidden shadow-inner">
+                <!-- Radar Polar Grid Overlay -->
+                <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 50% 100%, rgba(0,242,254,0.3) 1px, transparent 1px), radial-gradient(circle at 50% 100%, transparent 30%, rgba(0,242,254,0.15) 31%, transparent 32%), radial-gradient(circle at 50% 100%, transparent 60%, rgba(0,242,254,0.15) 61%, transparent 62%);"></div>
+
+                <!-- Top Micro Telemetry on TFT -->
+                <div class="absolute top-2.5 inset-x-3 flex justify-between font-mono text-[10px] text-cyan-400/80">
+                  <span>LD2450: 256000 BAUD</span>
+                  <span id="radarCoordReadout">TARGET_1: X=+0.00m Y=1.42m</span>
+                </div>
+
+                <!-- Procedural Vector Eyes (Track Cursor!) -->
+                <div class="flex items-center gap-10 my-2">
+                  <div class="w-16 h-20 rounded-2xl bg-cyan-400/10 border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_25px_rgba(0,242,254,0.45)] transition-transform duration-75" id="eyeLeftOuter">
+                    <div id="eyeLeftPupil" class="w-7 h-9 rounded-xl bg-cyan-300 shadow-[0_0_15px_#00f2fe] relative">
+                      <div class="w-2.5 h-2.5 rounded-full bg-white absolute top-1.5 right-1.5"></div>
+                    </div>
+                  </div>
+                  <div class="w-16 h-20 rounded-2xl bg-cyan-400/10 border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_25px_rgba(0,242,254,0.45)] transition-transform duration-75" id="eyeRightOuter">
+                    <div id="eyeRightPupil" class="w-7 h-9 rounded-xl bg-cyan-300 shadow-[0_0_15px_#00f2fe] relative">
+                      <div class="w-2.5 h-2.5 rounded-full bg-white absolute top-1.5 right-1.5"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bottom Emotion & I2S Voice Waveform Bar -->
+                <div class="absolute bottom-2.5 inset-x-3 flex items-center justify-between font-mono text-[10px]">
+                  <span id="emotionTagBadge" class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-400/40 text-purple-300">STATE: FOCUSED_TRACKING</span>
+                  <span class="text-emerald-400">I2S0: 16kHz | I2S1: 24kHz</span>
+                </div>
+              </div>
+
+              <!-- Emotion State Tester Buttons -->
+              <div class="flex flex-wrap items-center justify-between gap-2 mt-3 font-mono text-[11px]">
+                <span class="text-slate-400">Test Emotion JSON Payload:</span>
+                <div class="flex gap-1.5">
+                  <button onclick="setAssistantEmotion('FOCUSED_TRACKING', '#00f2fe')" class="px-2 py-1 rounded bg-slate-900 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/20">Focused</button>
+                  <button onclick="setAssistantEmotion('HAPPY_SPEAKING', '#34d399')" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20">Happy</button>
+                  <button onclick="setAssistantEmotion('THINKING_GEMINI', '#c084fc')" class="px-2 py-1 rounded bg-slate-900 border border-purple-500/40 text-purple-300 hover:bg-purple-500/20">Thinking</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Isolated Power Domains Box -->
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2.5">
+              <div class="font-mono text-xs text-amber-400 font-bold uppercase flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                4-Domain Star-Grounded Power Isolation (&lt;-88 dBFS Mic Floor)
+              </div>
+              <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                  <span class="text-amber-300 font-bold">Domain A (Raw 5V)</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">24× WS2812B ARGB + MAX98357A 5W Amp + 1000µF Bulk Cap</p>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                  <span class="text-cyan-300 font-bold">Domain B (Digital 3.3V)</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">Dedicated AMS1117-3.3V LDO for ESP32-S3 + 2.8" ILI9341 TFT</p>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                  <span class="text-purple-300 font-bold">Domain C (RF 5V/3.3V)</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">HLK-LD2450 24GHz FMCW Radar (~120mA pulsed isolation)</p>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                  <span class="text-emerald-300 font-bold">Domain D (Ultra-Clean)</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">RC Low-Pass (10Ω + 10µF) feeding ICS-43434 MEMS Mic</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 7 Columns: Full Hardware Pinout, Dual-Core RTOS & Cloud Run Pipeline -->
+          <div class="lg:col-span-7 space-y-5">
+            <!-- End-to-End Voice & Radar Dataflow -->
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+              <div class="font-mono text-xs text-cyan-400 font-bold uppercase mb-3">
+                FULL-DUPLEX MULTIMODAL DATAFLOW &amp; FREERTOS CORE PINNING
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-cyan-500/30">
+                  <div class="text-cyan-400 font-bold mb-1">1. EDGE CAPTURE (CORE 0)</div>
+                  <p class="text-slate-300 text-[11px] leading-relaxed">
+                    <strong>ICS-43434</strong> Digital MEMS Mic captures 24-bit audio on <code class="text-cyan-300">I2S_NUM_0</code> → DMA down-converted to 16-bit 16kHz PCM chunks streamed over TLS WebSocket.
+                  </p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-purple-500/30">
+                  <div class="text-purple-400 font-bold mb-1">2. CLOUD RUN + GEMINI LIVE</div>
+                  <p class="text-slate-300 text-[11px] leading-relaxed">
+                    Custom <strong>Python FastAPI Relay</strong> on Google Cloud Run maintains persistent session with <strong>Gemini Multimodal Live API</strong>, returning 24kHz PCM voice + JSON emotion tags.
+                  </p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-900/80 border border-emerald-500/30">
+                  <div class="text-emerald-400 font-bold mb-1">3. ACTUATION (CORE 1)</div>
+                  <p class="text-slate-300 text-[11px] leading-relaxed">
+                    <code class="text-emerald-300">I2S_NUM_1</code> drives <strong>MAX98357A</strong> + <strong>X-Rocker Speaker</strong> while Core 1 fuses <strong>LD2450 Radar</strong> <code class="text-cyan-300 font-mono">(X,Y)</code> coordinates into 35+ FPS eye vectors &amp; 24-LED ARGB ring.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Master GPIO Allocation Matrix from ASSISTANT_SAN_INFO.txt -->
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+              <div class="flex items-center justify-between mb-3">
+                <span class="font-mono text-xs text-purple-300 font-bold uppercase">ESP32-S3-WROOM-1-N16R8 Master Pinout Matrix (Zero-Conflict Bus Design)</span>
+                <span class="font-mono text-[10px] text-slate-400">Spec: ASSISTANT_SAN_INFO.txt</span>
+              </div>
+              <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full text-left font-mono text-[11px]">
+                  <thead class="bg-slate-900 text-cyan-400 border-b border-slate-800">
+                    <tr>
+                      <th class="p-2.5">SUBSYSTEM</th>
+                      <th class="p-2.5">HARDWARE PERIPHERAL</th>
+                      <th class="p-2.5">ESP32-S3 GPIO MAPPING</th>
+                      <th class="p-2.5">ENGINEERING NOTES</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/70 text-slate-300">
+                    <tr>
+                      <td class="p-2.5 font-bold text-white">2.8" ILI9341 TFT + Touch</td>
+                      <td class="p-2.5 text-cyan-300">SPI2 (40MHz DMA)</td>
+                      <td class="p-2.5">MOSI:11, SCLK:12, CS:10, DC:9, RST:14, T_CS:21, T_IRQ:47</td>
+                      <td class="p-2.5 text-slate-400">Double-buffered sprites in 8MB Octal PSRAM</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2.5 font-bold text-white">ICS-43434 MEMS Mic</td>
+                      <td class="p-2.5 text-emerald-300">I2S_NUM_0 (RX)</td>
+                      <td class="p-2.5">WS/LRCLK: 4, SCK/BCLK: 5, SD/DOUT: 6</td>
+                      <td class="p-2.5 text-slate-400">64 dBA SNR; RC-filtered 3.3V Domain D</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2.5 font-bold text-white">MAX98357A + X-Rocker</td>
+                      <td class="p-2.5 text-amber-300">I2S_NUM_1 (TX)</td>
+                      <td class="p-2.5">LRC: 7, BCLK: 15, DIN: 18</td>
+                      <td class="p-2.5 text-slate-400">5W Class-D into sealed X-Rocker chamber</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2.5 font-bold text-white">HLK-LD2450 24GHz Radar</td>
+                      <td class="p-2.5 text-purple-300">UART1 (256000 Bd)</td>
+                      <td class="p-2.5">ESP_RX: 16 ← Radar_TX, ESP_TX: 17 → Radar_RX</td>
+                      <td class="p-2.5 text-slate-400">Tracks up to 3 human targets up to 6m range</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2.5 font-bold text-white">24-LED WS2812B Ring</td>
+                      <td class="p-2.5 text-pink-300">RMT Peripheral</td>
+                      <td class="p-2.5">DATA_IN: GPIO 8 (via 330Ω series resistor)</td>
+                      <td class="p-2.5 text-slate-400">360° downward-firing floating base halo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate-400">
+                <span>• <strong class="text-white">Enclosure CAD:</strong> 3-Piece Zero-Support Parametric OpenSCAD (<code class="text-cyan-300 font-mono">110 × 95 × 125 mm</code>, 12° ergonomic head tilt)</span>
+                <span class="text-purple-300 font-semibold"> avoided GPIOs 35–37 (reserved for Octal PSRAM)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- PROJECT 03: EEZYbotARM MK2 (4-DOF PARALLELOGRAM ROBOTIC MANIPULATOR)  -->
+    <!-- ===================================================================== -->
+    <section id="eezybotarm" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <div class="inline-flex flex-wrap items-center gap-2 font-mono text-xs text-amber-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">PROJECT 03 // AWARD-WINNING ROBOTICS</span>
+            <span>• 4TH PLACE WINNER (AL-SHOLA 28TH &amp; MANARAT AL SHARJAH 11TH EXHIBITIONS)</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+            EEZYbotARM MK2: 4-DOF Parallelogram Manipulator
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+            My custom-fabricated white 3D-printed <strong class="text-white">EEZYbotARM MK2</strong> ("Robotic Hand" / <span class="font-mono text-amber-300">يد روبوت</span>) — an open-source 4-axis robotic manipulator originally architected by Italian mechanical designer <strong class="text-cyan-300">Carlo Franciscone (<code class="text-cyan-300 font-mono">daGHIZmo</code>)</strong> as a <strong class="text-amber-300">1:7 kinematic scale model of the ABB IRB 460</strong> high-speed industrial palletizing robot.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 font-mono text-xs shrink-0">
+          <span class="px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold">🏆 2× 4th Place Trophy Winner</span>
+          <span class="px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">ABB IRB 460 Kinematics</span>
+          <span class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-300">3× MG995 + 1× SG90</span>
+        </div>
+      </div>
+
+      <!-- COMMENTED OUT PER USER INSTRUCTION: Other School Lab Robot Photos (M5Stack Core2 Cyan Gripper Bot) -->
+      <!--
+      <div class="hidden">
+        <img src="20251027_085013.jpg" alt="Commented out M5Stack robot photo 1" />
+        <img src="20251027_104242.jpg" alt="Commented out M5Stack robot photo 2" />
+      </div>
+      -->
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left 6 Columns: Live Competition Video (NEW4.mp4) + 2 Bench Calibration Videos + 4 Real Photos -->
+        <div class="lg:col-span-6 space-y-6">
+          <!-- Multi-Video Player Card -->
+          <div class="hud-card rounded-2xl p-5 border-amber-500/30">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="font-mono text-xs text-amber-300 font-bold flex items-center gap-2">
+                <i data-lucide="video" class="w-4 h-4 text-amber-400"></i>
+                LIVE COMPETITION &amp; KINEMATIC BENCH REELS
+              </span>
+              <div class="flex flex-wrap gap-1 font-mono text-[10px]">
+                <button onclick="switchEezyVideo('NEW4.mp4', 'Competition Live Run: Operating the white EEZYbotARM MK2 in a lab coat via laptop C++ controller in front of judges.')" class="px-2.5 py-1 rounded bg-amber-500/20 border border-amber-400/50 text-amber-200 font-bold hover:bg-amber-500/30">
+                  1. Competition Live (NEW4.mp4)
+                </button>
+                <button onclick="switchEezyVideo('20241116_182347.mp4', 'Bench Calibration Run 1: Testing 4-DOF closed-loop parallelogram horizontal wrist constraint.')" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">
+                  2. Linkage Test #1
+                </button>
+                <button onclick="switchEezyVideo('20241116_182553.mp4', 'Bench Calibration Run 2: Multi-axis pick-and-place trajectory smoothing on Arduino Uno R3.')" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">
+                  3. Pick &amp; Place #2
+                </button>
+              </div>
+            </div>
+
+            <div class="video-hud-frame">
+              <video id="eezyMainVideo" controls preload="metadata" playsinline class="w-full h-64 sm:h-72 object-cover bg-black">
+                <source src="NEW4.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <p id="eezyMainVideoCaption" class="font-mono text-xs text-slate-300 mt-2.5">
+              Competition Live Run: Operating the white EEZYbotARM MK2 in a lab coat via laptop C++ controller in front of judges.
+            </p>
+          </div>
+
+          <!-- 4-Photo Fabrication & Assembly Grid (All Upright!) -->
+          <div class="hud-card rounded-2xl p-5">
+            <div class="font-mono text-xs text-cyan-400 font-bold uppercase mb-3 flex items-center justify-between">
+              <span>ACTUAL WHITE 3D-PRINTED EEZYbotARM MK2 BUILD LOG</span>
+              <span class="text-[10px] text-slate-400">CLICK TO ENLARGE</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div onclick="openLightbox('eezybotarm_mk2_upright.jpg', 'Completed White 3D-Printed EEZYbotARM MK2 wired to Arduino Uno R3 & Sensor Shield with MG995 high-torque servos')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                <img src="eezybotarm_mk2_upright.jpg" alt="Assembled EEZYbotARM MK2" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2.5 font-mono text-[11px] text-amber-300 font-semibold">01. Assembled MK2 + Arduino Uno</div>
+              </div>
+
+              <div onclick="openLightbox('4cd45537-c1bb-44ac-87ea-83160ba3d1ab.jpg?v=2', 'FDM 3D Printing the EEZYbotARM MK2 structural parallelogram links in white PLA on textured PEI bed')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="4cd45537-c1bb-44ac-87ea-83160ba3d1ab.jpg?v=2" alt="3D Printing EEZYbotARM MK2" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2.5 font-mono text-[11px] text-slate-200">02. Printing White PLA Links on PEI</div>
+              </div>
+
+              <div onclick="openLightbox('87cb4824-d450-4642-bab5-357efae3a8dd.jpg?v=2', 'Full batch of 15+ custom 3D-printed white EEZYbotARM MK2 components: base turntable, main arm, parallelogram rods & gear gripper')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="87cb4824-d450-4642-bab5-357efae3a8dd.jpg?v=2" alt="Exploded 3D Printed Parts" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2.5 font-mono text-[11px] text-slate-200">03. Full Batch of 15+ Printed Parts</div>
+              </div>
+
+              <div onclick="openLightbox('a93e2dac-467b-47b0-a56e-7cdbff4d72c0.jpg?v=2', 'Voxelab FDM 3D Printer setup used to fabricate the white PLA structural links and gripper gears')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="a93e2dac-467b-47b0-a56e-7cdbff4d72c0.jpg?v=2" alt="Voxelab FDM 3D Printer" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2.5 font-mono text-[11px] text-slate-200">04. Voxelab FDM 3D Printer Setup</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 6 Columns: Verified Mechanical & Kinematic Specs + Engineering Solutions -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="hud-card rounded-2xl p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <span class="font-mono text-xs text-amber-400 uppercase font-bold">VERIFIED ARCHITECTURE &amp; KINEMATICS</span>
+                <h3 class="font-display text-2xl font-bold text-white mt-0.5">
+                  1:7 Scale ABB IRB 460 Parallelogram Mechanics
+                </h3>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 font-mono text-[11px] text-cyan-300">Design: daGHIZmo / MK2</span>
+            </div>
+
+            <p class="text-slate-300 text-sm leading-relaxed">
+              Unlike conventional serial-link hobbyist arms where every joint motor adds cantilevered dead-weight to the distal links, the <strong class="text-white">EEZYbotARM MK2</strong> concentrates all three heavy <strong class="text-cyan-300">MG995 metal-gear servos</strong> inside the stationary base turret. Motion is transmitted through a <strong class="text-amber-300">dual closed-loop 4-bar parallelogram linkage</strong> that mechanically locks the end-effector wrist strictly parallel to the ground (θ<sub>wrist</sub> = 0°) across the entire vertical and radial reach envelope.
+            </p>
+
+            <!-- Complete Hardware Spec Table -->
+            <div class="overflow-x-auto rounded-xl border border-slate-800">
+              <table class="w-full text-left font-mono text-xs">
+                <thead class="bg-slate-950 text-amber-400 border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">PARAMETER / SUBSYSTEM</th>
+                    <th class="p-3">SPECIFICATION</th>
+                    <th class="p-3">MECHANICAL FUNCTION</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/70 bg-slate-900/40 text-slate-300">
+                  <tr>
+                    <td class="p-3 font-bold text-white">Kinematic Topology</td>
+                    <td class="p-3 text-cyan-300">4-DOF Dual Parallelogram</td>
+                    <td class="p-3">1:7 scale ABB IRB 460; passive horizontal wrist stabilization</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">Primary Actuators (×3)</td>
+                    <td class="p-3 text-amber-300">3× MG995 / MG946R (55g)</td>
+                    <td class="p-3">9.4–11 kg·cm stall torque @ 6V (Base Yaw J<sub>1</sub>, Shoulder J<sub>2</sub>, Reach J<sub>3</sub>)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">End-Effector Actuator</td>
+                    <td class="p-3 text-purple-300">1× SG90 / MG90S (9g)</td>
+                    <td class="p-3">Drives synchronous double-gear parallel jaw gripper (0–50 mm span)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">Turntable Slew Bearing</td>
+                    <td class="p-3 text-emerald-300">606ZZ + ~25× Ø6mm Balls</td>
+                    <td class="p-3">Central 6 × 17 × 6 mm radial bearing + steel ball raceway absorbs overturning moment</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">Reach &amp; Workspace</td>
+                    <td class="p-3 text-white">~310 mm Max Radial Reach</td>
+                    <td class="p-3">160° base slew, ~220 mm vertical lift, 0.20 mm FDM layer slicing</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">Control Electronics</td>
+                    <td class="p-3 text-cyan-300">Arduino Uno R3 + Shield</td>
+                    <td class="p-3">50Hz hardware PWM (<code class="text-cyan-300 font-mono">500–2400 µs</code>) with S-curve velocity ramping</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- How I Solved Backlash & Servo Jitter -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="font-mono text-xs text-cyan-400 font-bold mb-1">PRECISION REAMING &amp; LOCKNUT PRELOAD</div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  FDM-printed pinholes exhibit ±0.15 mm thermal shrinkage that either binds the 4-bar linkage or introduces slop at the gripper tip. I precision-reamed every pivot bore and preloaded each joint with <strong class="text-white">M3/M4 Nyloc locknuts</strong> and brass bushings.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="font-mono text-xs text-amber-400 font-bold mb-1">CUBIC PWM TRAJECTORY INTERPOLATION</div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Stepping an MG995 servo directly from θ<sub>0</sub> to θ<sub>f</sub> spikes current above 2.5A and shakes the chassis. My C++ controller interpolates joint angles in 5 ms time-slices with trapezoidal acceleration ramps.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PROJECT 04: SMART DESERT RECLAIMER ROVER (EDGE-AI & RF TELEMETRY UGV) -->
+    <!-- ===================================================================== -->
+    <section id="rover" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <div class="inline-flex flex-wrap items-center gap-2 font-mono text-xs text-emerald-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30">PROJECT 04 // AUTONOMOUS AGRO-ROBOTICS</span>
+            <span>• DUAL-COMPUTE EDGE-AI VISION &amp; 2.4GHz RF SOIL TELEMETRY</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+            Smart Desert Reclaimer Rover
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+            An autonomous 4-wheel agricultural UGV built on a custom <strong class="text-white">sheet-aluminum deck</strong> with an articulated <strong class="text-emerald-300">sheet-metal servo soil-probe arm</strong>, vertical camera mast, <strong class="text-cyan-300">Raspberry Pi MobileNet V2</strong> computer-vision brain, and <strong class="text-amber-300">Arduino Uno + NRF24L01+ PA+LNA</strong> 2.4GHz wireless telemetry link.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 font-mono text-xs shrink-0">
+          <span class="px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300">MobileNet V2 (87.6% Conf)</span>
+          <span class="px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">Raspberry Pi + Arduino Uno</span>
+          <span class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">NRF24L01+ 2.4GHz RF</span>
+        </div>
+      </div>
+
+      <!-- COMMENTED OUT PER USER INSTRUCTION: Keyestudio Tracked Tank Robot Photo -->
+      <!--
+      <div class="hidden">
+        <img src="20260121_124219.jpg" alt="Commented out Keyestudio tracked tank robot" />
+      </div>
+      -->
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left 6 Columns: Dual-Brain Architecture, Terminal Output & Hardware Specs -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="hud-card rounded-2xl p-6 sm:p-7 space-y-5">
+            <h3 class="font-display text-2xl font-bold text-white">
+              Heterogeneous Dual-Processor UGV Architecture
+            </h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              Running deep convolutional neural networks on a single microcontroller starves real-time motor PWM and soil sensor polling. I partitioned the rover into two cooperative compute nodes: a <strong class="text-cyan-300">Raspberry Pi</strong> executing <code class="text-emerald-300">rover_brain.py</code> (TensorFlow Lite <strong class="text-white">MobileNet V2</strong> terrain &amp; soil fertility classification from the mast camera) paired with a deterministic <strong class="text-amber-300">Arduino Uno R3</strong> controlling the 4WD L298N H-bridge drive, articulated front sheet-metal soil probe servo, and <strong class="text-white">NRF24L01+ 2.4GHz transceiver</strong>.
+            </p>
+
+            <!-- Live Linux Terminal Output Replication from 20260426_230935.jpg -->
+            <div class="rounded-xl overflow-hidden border border-emerald-500/40 bg-[#050811] font-mono text-xs shadow-xl">
+              <div class="bg-slate-900 px-3.5 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span class="ml-1 text-slate-200">pi@raspberrypi:~/desert_rover $ python3 rover_brain.py</span>
+                </span>
+                <span class="text-emerald-400">VERIFIED SHELL LOG</span>
+              </div>
+              <div class="p-4 space-y-1.5 text-slate-300 leading-relaxed">
+                <div class="text-cyan-400">[SYSTEM] Initializing Smart Desert Reclaimer Brain...</div>
+                <div class="text-slate-400">[AI] Loading MobileNet V2 (Soil Fertility Model)... <span class="text-emerald-400">READY</span></div>
+                <div class="text-slate-400">[RF] NRF24L01+ 2.4GHz Telemetry Pipe 0xF0F0F0F0E1LL... <span class="text-emerald-400">ONLINE</span></div>
+                <div class="text-amber-300">[ACTUATOR] Lowering Front Sheet-Metal Soil Probe Arm (Servo PWM 1650µs)...</div>
+                <div class="text-emerald-300 font-bold">[AI] Scanning soil... -&gt; Result: High Fertility (87.6% Confidence)</div>
+                <div class="text-purple-300">[TELEMETRY] TX Packet #104 -&gt; Moisture: 64.2% | Temp: 28.4°C | Seed Dispense: ARMED</div>
+              </div>
+            </div>
+
+            <!-- Subsystem Breakdown Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="text-emerald-400 font-bold mb-1">CUSTOM ALUMINUM DECK &amp; PROBE ARM</div>
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                  Fabricated a rigid bent sheet-aluminum upper deck over the 4-wheel yellow TT gearmotor chassis, mounting a front servo-actuated sheet-metal probe arm that physically inserts the moisture sensor into arid sand.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+                <div class="text-cyan-400 font-bold mb-1">NRF24L01+ PA+LNA TELEMETRY</div>
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                  Streams live soil moisture, fertility classification confidence, and GPS/odometry packets over 2.4GHz ISM band (<code class="text-cyan-300 font-mono">NRF24L01_test_complete.ino</code>) with hardware CRC and auto-ACK retries.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 6 Columns: Actual Rover Photo + MobileNet Terminal Photo + Video + Unboxed Kit -->
+        <div class="lg:col-span-6 space-y-6">
+          <!-- Hero Photo of Actual Rover + Video Grid -->
+          <div class="hud-card rounded-2xl p-5 border-emerald-500/30">
+            <div class="font-mono text-xs text-emerald-400 font-bold uppercase mb-3 flex items-center justify-between">
+              <span>ACTUAL ROVER HARDWARE &amp; MOBILENET V2 FIELD TELEMETRY</span>
+              <span class="text-[10px] text-slate-400">CLICK TO INSPECT</span>
+            </div>
+
+            <!-- Primary Photo: f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg -->
+            <div onclick="openLightbox('f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg', 'Smart Desert Reclaimer Rover — 4-Wheel Yellow-Wheel Chassis, Custom Sheet-Aluminum Deck, Articulated Sheet-Metal Soil Probe Arm, Vertical Camera Mast, NRF24L01+ Antenna & Arduino/Pi Telemetry')" class="group cursor-pointer rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950 mb-3 relative">
+              <img src="f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg" alt="Smart Desert Reclaimer Rover Actual Hardware" class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform" />
+              <div class="p-3 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between">
+                <span class="font-mono text-xs text-emerald-300 font-bold">01. Completed Smart Desert Reclaimer Rover + NRF24L01+ Workbench</span>
+                <span class="font-mono text-[10px] text-cyan-400">[Full View ↗]</span>
+              </div>
+            </div>
+
+            <!-- 3-Column Supporting Evidence: MobileNet Terminal, Unboxed Kit, Linux Debug -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div onclick="openLightbox('20260426_230935.jpg', 'Live Raspberry Pi Terminal Running rover_brain.py — MobileNet V2 Soil Classification: High Fertility (87.6%)')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                <img src="20260426_230935.jpg" alt="MobileNet V2 Terminal" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-emerald-300">02. MobileNet V2 (87.6%)</div>
+              </div>
+
+              <div onclick="openLightbox('20260216_152651.jpg?v=2', 'Unboxed Rover Drivetrain Kit: 4× Yellow TT Gearmotors, Wheels, Acrylic Chassis Plates, L298N H-Bridge & Arduino Uno')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="20260216_152651.jpg?v=2" alt="Unboxed Rover Kit" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-slate-300">03. 4WD Drivetrain Kit</div>
+              </div>
+
+              <div onclick="openLightbox('20260426_211635.jpg', 'Raspberry Pi OS Edge-AI Vision & Serial Telemetry Integration')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="20260426_211635.jpg" alt="Raspberry Pi Vision" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-slate-300">04. Pi Vision Pipeline</div>
+              </div>
+            </div>
+
+            <!-- Embedded Video: 20260426_152853.mp4 -->
+            <div class="video-hud-frame">
+              <video controls preload="metadata" playsinline class="w-full h-48 object-cover bg-black">
+                <source src="20260426_152853.mp4" type="video/mp4" />
+              </video>
+              <div class="p-2.5 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between font-mono text-[11px]">
+                <span class="text-slate-300">Live Lab Test: Edge-AI Inference &amp; Telemetry Integration</span>
+                <span class="text-emerald-400">20260426_152853.mp4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PROJECT 05: THERMOSYNC (AUS SHARAKAH 2026) & GREEN WAVE (2025)        -->
+    <!-- ===================================================================== -->
+    <section id="thermosync" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <div class="inline-flex flex-wrap items-center gap-2 font-mono text-xs text-cyan-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30">PROJECT 05 // SUSTAINABLE CAMPUS ARCHITECTURE</span>
+            <span>• AMERICAN UNIVERSITY OF SHARJAH (AUS) SHARAKAH × NET IMPACT (2025 &amp; 2026)</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+            THERMOSYNC (2026) &amp; Green Wave (2025)
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+            Two consecutive years representing <strong class="text-white">Manarat Al Sharjah Private School</strong> at the <strong class="text-cyan-300">American University of Sharjah (AUS) Sharakah Sustainability Challenge</strong>: engineering software-first BACnet/IP HVAC timetable synchronization (<strong class="text-emerald-300">THERMOSYNC</strong>) and 4-stage decentralized greywater bioremediation (<strong class="text-cyan-300">Green Wave</strong>).
+          </p>
+          <div class="mt-3 flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-400/40 text-amber-300">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+              <span>AUS Sharakah 2026 Institutional Certificate: In Administrative Transit (&gt;3 Weeks Pending)</span>
+            </span>
+            <span class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 text-[11px]">
+              Adjudication &amp; Booth Exhibition Completed
+            </span>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a href="THERMOSYNC%20portfolio%20page%20(NEW%202).pdf" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-200 font-mono text-xs font-bold flex items-center gap-2 transition-all">
+            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+            Open THERMOSYNC Portfolio PDF (NEW 2) ↗
+          </a>
+          <a href="portfolio_green_wave%20(sharakah%202025).html" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-200 font-mono text-xs flex items-center gap-2 transition-all">
+            <i data-lucide="external-link" class="w-4 h-4 text-cyan-400"></i>
+            Launch Green Wave 2025 Interactive Microsite ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left 7 Columns: THERMOSYNC 2026 Deep Dive + Chart + Green Wave 2025 -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="hud-card rounded-2xl p-6 sm:p-7 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+              <div>
+                <span class="font-mono text-xs text-emerald-400 font-bold uppercase">SHARAKAH × NET IMPACT 2026 // ZERO-CAPEX SMART BMS</span>
+                <h3 class="font-display text-2xl font-bold text-white mt-0.5">
+                  THERMOSYNC: Timetable-Driven BACnet/IP Chiller Optimization
+                </h3>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-emerald-500/15 border border-emerald-500/30 font-mono text-xs text-emerald-300 font-bold">-1,000t CO₂ / yr</span>
+            </div>
+
+            <p class="text-slate-300 text-sm leading-relaxed">
+              In the UAE, chilled-water HVAC systems account for <strong class="text-white">60–70% of university campus electricity consumption</strong>, yet lecture halls and labs are cooled to 21°C 24/7 regardless of whether a room is occupied. Instead of installing thousands of costly PIR motion sensors (which fail when students sit still during exams), <strong class="text-emerald-300">THERMOSYNC</strong> bridges the university’s <strong class="text-cyan-300">Banner / Registrar SQL Class Schedule API</strong> directly to the campus <strong class="text-white">Building Management System (BMS) via BACnet/IP</strong>:
+            </p>
+
+            <!-- 3-State Thermal Control Loop -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
+                <div class="text-cyan-400 font-bold">1. PRE-COOL RAMP</div>
+                <div class="text-white font-display text-lg font-bold mt-0.5">T - 15 mins</div>
+                <p class="text-slate-400 text-[11px] mt-1">Modulates VAV dampers to 22°C 15 minutes before scheduled lecture start.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-emerald-500/30">
+                <div class="text-emerald-400 font-bold">2. VACANT SETBACK</div>
+                <div class="text-white font-display text-lg font-bold mt-0.5">26°C – 27°C</div>
+                <p class="text-slate-400 text-[11px] mt-1">Raises setpoint during unbooked blocks, cutting zone cooling load by 22–28%.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950/90 border border-amber-500/30">
+                <div class="text-amber-400 font-bold">3. ANNUAL ROI</div>
+                <div class="text-white font-display text-lg font-bold mt-0.5">AED 1.1M / yr</div>
+                <p class="text-slate-400 text-[11px] mt-1">Zero hardware retrofit cost; immediate deployment across AUS lecture buildings.</p>
+              </div>
+            </div>
+
+            <!-- Interactive Chart: THERMOSYNC vs Baseline HVAC Load -->
+            <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800">
+              <div class="flex items-center justify-between mb-2 font-mono text-xs">
+                <span class="text-emerald-400 font-bold uppercase">Hourly Campus Cooling Load: Baseline BMS vs. THERMOSYNC (kW)</span>
+                <span class="text-slate-400 text-[10px]">28% Peak Load Reduction</span>
+              </div>
+              <div class="h-48">
+                <canvas id="thermosyncChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Green Wave 2025 Summary Strip -->
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div class="font-mono text-xs text-cyan-400 font-bold uppercase">SHARAKAH 2025 // GREEN WAVE GREYWATER BIOREMEDIATION</div>
+                <p class="text-xs text-slate-300 mt-1">
+                  Engineered a 4-stage decentralized campus greywater recycling system (Screen → Activated Carbon + Bio-Sand → Subsurface Vetiver/Phragmites Reed Bed → UV-C LED Polish) cutting irrigation demand by <strong class="text-white">30%</strong> with a <strong class="text-emerald-300">2.8-year payback</strong>.
+                </p>
+              </div>
+              <a href="portfolio_green_wave%20(sharakah%202025).html" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-lg bg-cyan-400 text-slate-950 font-mono font-bold text-xs shrink-0 hover:bg-cyan-300 transition-all">
+                View 2025 Site ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 Columns: Upright THERMOSYNC Poster + Presentation Board + AUS Sharakah Gallery -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="hud-card rounded-2xl p-5">
+            <div class="font-mono text-xs text-emerald-400 font-bold uppercase mb-3 flex items-center justify-between">
+              <span>AUS SHARAKAH 2026 &amp; 2025 EXHIBITION ARCHIVE</span>
+              <span class="text-[10px] text-slate-400">6 VERIFIED PHOTOS</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Upright ThermoSync Poster -->
+              <div onclick="openLightbox('thermosync_poster_upright.jpg', 'THERMOSYNC (2026) — Official Architectural & BMS Engineering Poster at American University of Sharjah')" class="group cursor-pointer rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950">
+                <img src="thermosync_poster_upright.jpg" alt="THERMOSYNC 2026 Poster" class="raw-upright w-full h-40 object-cover object-top group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-emerald-300 font-semibold">01. THERMOSYNC 2026 Poster</div>
+              </div>
+
+              <!-- ThermoSync Presentation Board -->
+              <div onclick="openLightbox('20261008_123333.jpg', 'THERMOSYNC (2026) — Trifold Engineering Display & Cost-Benefit Breakdown at AUS')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                <img src="20261008_123333.jpg" alt="THERMOSYNC Display Board" class="w-full h-40 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-slate-200">02. THERMOSYNC Display Board</div>
+              </div>
+
+              <!-- AUS Sharakah 2025 Photo 1 -->
+              <div onclick="openLightbox('_DSC5222.jpg', 'Presenting Green Wave 4-Stage Greywater Bioremediation to AUS Faculty Judges at Sharakah 2025')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="_DSC5222.jpg" alt="AUS Sharakah 2025 Presentation" class="w-full h-28 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-cyan-300">03. AUS Judge Defense (2025)</div>
+              </div>
+
+              <!-- AUS Sharakah 2025 Photo 2 -->
+              <div onclick="openLightbox('_DSC5226.jpg', 'Live Technical Q&A with American University of Sharjah Engineering Jury')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="_DSC5226.jpg" alt="AUS Sharakah Technical Q&A" class="w-full h-28 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-slate-300">04. AUS Jury Q&amp;A Session</div>
+              </div>
+
+              <!-- AUS Sharakah 2025 Photo 3 -->
+              <div onclick="openLightbox('_DSC5248.jpg', 'Manarat Al Sharjah Engineering Delegation at American University of Sharjah')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                <img src="_DSC5248.jpg" alt="Manarat Al Sharjah Team at AUS" class="w-full h-28 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-slate-300">05. AUS Exhibition Stand</div>
+              </div>
+
+              <!-- AUS Sharakah 2025 Photo 4 -->
+              <div onclick="openLightbox('_DSC0024.jpg', 'Official Award & Recognition Ceremony on Stage at American University of Sharjah')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                <img src="_DSC0024.jpg" alt="AUS Stage Recognition" class="w-full h-28 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-amber-300">06. AUS Stage Honors</div>
+              </div>
+            </div>
+
+            <!-- PLACEHOLDER FOR UPCOMING SHARAKAH 2026 STAGE PHOTOS -->
+            <!--
+            TODO: Add additional Sharakah 2026 ceremony photos here when received from AUS media team:
+            <div onclick="openLightbox('sharakah_2026_stage_1.jpg', 'AUS Sharakah x Net Impact 2026 Stage Presentation')">...</div>
+            -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 06: ALL 9 VERIFIED CERTIFICATES & HONORS VAULT                -->
+    <!-- ===================================================================== -->
+    <section id="certificates" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+        <div>
+          <div class="inline-flex items-center gap-2 font-mono text-xs text-amber-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">SECTION 06 // VERIFIED CREDENTIALS VAULT</span>
+            <span>• ALL 9 OFFICIAL CERTIFICATES (2023–2026)</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+            9 Official Awards &amp; National Honors
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+            Every certificate below is verified with its high-resolution scan and official PDF where applicable. Click any certificate to inspect the full-resolution document in the Lightbox.
+          </p>
+        </div>
+
+        <!-- Category Filter Buttons -->
+        <div class="flex flex-wrap gap-2 font-mono text-xs">
+          <button onclick="filterCerts('all')" id="certBtn-all" class="tab-btn active px-3.5 py-2 rounded-xl border border-slate-700 text-slate-200">
+            All Verified [9]
+          </button>
+          <button onclick="filterCerts('national')" id="certBtn-national" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300">
+            National &amp; IEEE AI [2]
+          </button>
+          <button onclick="filterCerts('robotics')" id="certBtn-robotics" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300">
+            Robotics &amp; Innovation [6]
+          </button>
+          <button onclick="filterCerts('cultural')" id="certBtn-cultural" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300">
+            Academic &amp; Cultural [1]
+          </button>
+        </div>
+      </div>
+
+      <!-- Transparent Competition Audit & Pending Administrative Dispatches -->
+      <div class="mb-10 space-y-4">
+        <div class="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/30">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="font-mono text-xs font-bold text-amber-300 uppercase tracking-wider">
+              COMPETITION AUDIT // PENDING ADMINISTRATIVE DISPATCHES &amp; CONFLICT CONTEXT
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Item 1: ADNOC STEM AI Challenge (Missing Certificate / Verified Proof) -->
+            <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-[10px] text-cyan-400 uppercase font-bold">ADNOC STEM FOR LIFE</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-400/30 font-semibold">CERTIFICATE PENDING</span>
+                </div>
+                <h4 class="font-display font-bold text-white text-sm">Future of AI Schools Challenge (May 2025)</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  Participated in the national AI challenge. Completion was officially confirmed on the community portal, but final school-level certificate distribution remained unfulfilled ("certificate missing"). Preserved here with verified community announcement proof.
+                </p>
+              </div>
+              <div class="mt-3.5 pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
+                <button onclick="openLightbox('adnoc_stem_ai_challenge_proof.png', 'ADNOC STEM for Life — Future of AI Schools Challenge: Official Announcement Confirming Completion &amp; Finalist Evaluation (May 9, 2025)')" class="text-cyan-400 hover:text-white font-mono text-[11px] underline flex items-center gap-1">
+                  <i data-lucide="zoom-in" class="w-3 h-3"></i> Inspect Portal Proof
+                </button>
+                <span class="font-mono text-[10px] text-slate-500">May 2025</span>
+              </div>
+            </div>
+
+            <!-- Item 2: AUS Sharakah 2026 (In Transit >3 Weeks) -->
+            <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-[10px] text-emerald-400 uppercase font-bold">AUS SHARAKAH 2026</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-400/30 font-semibold">IN TRANSIT (&gt;3 WEEKS)</span>
+                </div>
+                <h4 class="font-display font-bold text-white text-sm">THERMOSYNC: Smart BMS Sustainability Challenge</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  Represented Manarat Al Sharjah Private School at the American University of Sharjah. Project submission, live presentation, and judging completed; official institutional certificates remain in administrative dispatch (&gt;3 weeks post-event).
+                </p>
+              </div>
+              <div class="mt-3.5 pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
+                <button onclick="openLightbox('thermosync_poster_upright.jpg', 'THERMOSYNC — American University of Sharjah (AUS) Sharakah Sustainability Challenge 2026 Official Architectural Poster')" class="text-emerald-400 hover:text-white font-mono text-[11px] underline flex items-center gap-1">
+                  <i data-lucide="zoom-in" class="w-3 h-3"></i> Inspect Poster
+                </button>
+                <span class="font-mono text-[10px] text-slate-500">2026</span>
+              </div>
+            </div>
+
+            <!-- Item 3: OzoCore Geopolitical Cancellation Context -->
+            <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-[10px] text-purple-400 uppercase font-bold">OZOCORE REACTOR</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-purple-500/20 text-purple-300 border border-purple-400/30 font-semibold">GEOPOLITICAL CONFLICT</span>
+                </div>
+                <h4 class="font-display font-bold text-white text-sm">Regional Finals Cancellation Context</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  While EEZYbotARM MK2 won two 4th Place awards, OzoCore completed last year had no external national finals due to regional conflict cancellations (Iran–USA escalations). Showcased live at Al-Shola 29th Exhibition (Cert #06).
+                </p>
+              </div>
+              <div class="mt-3.5 pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
+                <button onclick="openLightbox('ozocore_competition_booth.jpg', 'Al-Shola 29th Innovation Exhibition: Project Identification Board #17 (OZOcore - smart ozone generator)')" class="text-purple-400 hover:text-white font-mono text-[11px] underline flex items-center gap-1">
+                  <i data-lucide="zoom-in" class="w-3 h-3"></i> Inspect Booth Board
+                </button>
+                <span class="font-mono text-[10px] text-slate-500">2025</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9-Card Certificates Grid (All Upright with .raw-upright!) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="certGrid">
+
+        <!-- CERT 01: UAE Ministry of Education, TDRA & ICTFund AI National Championship -->
+        <div data-cat="national" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between border-cyan-500/40">
+          <div>
+            <div onclick="openLightbox('20261025_095450.jpg?v=2', 'Cert #01: UAE Ministry of Education, TDRA & ICTFund — AI National Championship (2024–2025)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095450.jpg?v=2" alt="UAE MOE & TDRA AI National Championship Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300 font-bold">CERT #01 // NATIONAL AI</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-cyan-400 uppercase">UAE Ministry of Education • TDRA • ICTFund</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                AI National Championship (البطولة الوطنية للذكاء الاصطناعي)
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Awarded to <strong class="text-slate-200">Kenan Hussam Eddin Al Chayah</strong> for participating in the UAE National Artificial Intelligence Championship (2024–2025) organized with Edutech.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between gap-2 font-mono text-xs">
+            <button onclick="openLightbox('20261025_095450.jpg?v=2', 'Cert #01: UAE Ministry of Education, TDRA & ICTFund — AI National Championship (2024–2025)')" class="text-cyan-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect Scan
+            </button>
+            <a href="NEW%201.pdf" target="_blank" rel="noopener" class="px-2.5 py-1 rounded bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/25">
+              Official PDF (NEW 1) ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- CERT 02: 7th UAE IoT & AI Challenge (IEEE TEMS, UAE MOE, RIT Dubai) -->
+        <div data-cat="national" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between border-purple-500/40">
+          <div>
+            <div onclick="openLightbox('cert_uae_iot_ai_new3.jpg', 'Cert #02: 7th UAE IoT & AI Challenge — IEEE TEMS, UAE Ministry of Education & RIT Dubai')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="cert_uae_iot_ai_new3.jpg" alt="7th UAE IoT & AI Challenge Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-400/50 font-mono text-[10px] text-purple-300 font-bold">CERT #02 // IEEE &amp; RIT DUBAI</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-purple-400 uppercase">IEEE TEMS • UAE MOE • RIT Dubai • Du</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                7th Edition of the UAE IoT &amp; AI Challenge
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Awarded to <strong class="text-slate-200">Kenan Hussam Al-Din</strong> in recognition of outstanding effort, dedication, and innovative spirit in the 7th UAE IoT &amp; AI Challenge.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between gap-2 font-mono text-xs">
+            <button onclick="openLightbox('cert_uae_iot_ai_new3.jpg', 'Cert #02: 7th UAE IoT & AI Challenge — IEEE TEMS, UAE Ministry of Education & RIT Dubai')" class="text-purple-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect Scan
+            </button>
+            <a href="Your%20Achievement%20at%20UAE%20IoT%20%26%20AI%20Kenan%20Hussam%20Al-Din%20(NEW%203).pdf" target="_blank" rel="noopener" class="px-2.5 py-1 rounded bg-purple-500/15 border border-purple-500/40 text-purple-300 hover:bg-purple-500/25">
+              Official PDF (NEW 3) ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- CERT 03: Al-Shola 28th Innovation Exhibition — 4th Place Winner -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between border-amber-500/50">
+          <div>
+            <div onclick="openLightbox('20261025_095438.jpg?v=2', 'Cert #03: 4th Place Winner — Al-Shola 28th Innovation Exhibition (Best Innovative Project, Category 3: Grades 9–10)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095438.jpg?v=2" alt="Al-Shola 28th Innovation Exhibition 4th Place Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/25 border border-amber-400/60 font-mono text-[10px] text-amber-300 font-bold">🏆 CERT #03 // 4TH PLACE WINNER</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-amber-400 uppercase">Al-Shola Private School • 28th Innovation Expo</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                4th Place Winner — Best Innovative Project (Grades 9–10)
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Won <strong class="text-amber-300">4th Place (المركز الرابع)</strong> in Category 3 at the 28th Innovation Exhibition ("Environment &amp; Sustainability" / البيئة والاستدامة, 2024/2025).
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095438.jpg?v=2', 'Cert #03: 4th Place Winner — Al-Shola 28th Innovation Exhibition')" class="text-amber-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">2024 / 2025</span>
+          </div>
+        </div>
+
+        <!-- CERT 04: Manarat Al Sharjah 11th Science Exhibition — 4th Place Winner ("Robotic Hand") -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between border-amber-500/50">
+          <div>
+            <div onclick="openLightbox('20261025_095500.jpg?v=2', 'Cert #04: 4th Place Winner — Manarat Al Sharjah 11th Science Exhibition for EEZYbotARM MK2 (يد روبوت / Robotic Hand)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095500.jpg?v=2" alt="Manarat Al Sharjah 11th Science Exhibition 4th Place" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/25 border border-amber-400/60 font-mono text-[10px] text-amber-300 font-bold">🏆 CERT #04 // 4TH PLACE WINNER</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-amber-400 uppercase">Manarat Al Sharjah • 11th Science Exhibition</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                4th Place Winner — "Robotic Hand" (يد روبوت / EEZYbotARM MK2)
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Awarded <strong class="text-amber-300">4th Place</strong> at the 11th Scientific Exhibition ("Towards a Sustainable Green Environment") for the 4-DOF EEZYbotARM MK2 project.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095500.jpg?v=2', 'Cert #04: 4th Place Winner — Manarat Al Sharjah 11th Science Exhibition')" class="text-amber-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">2024 / 2025</span>
+          </div>
+        </div>
+
+        <!-- CERT 05: Manarat Al Sharjah — Outstanding Innovative Project ("Robotic Hand" / يد روبوت) -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div onclick="openLightbox('20261025_095424.jpg?v=2', 'Cert #05: Manarat Al Sharjah Private School — Certificate of Appreciation for Outstanding Innovative Project Robotic Hand (يد روبوت)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095424.jpg?v=2" alt="Manarat Al Sharjah Robotic Hand Appreciation Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300 font-bold">CERT #05 // ROBOTIC HAND</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-cyan-400 uppercase">Manarat Al Sharjah Private School</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                Special Recognition — Innovative "Robotic Hand" (يد روبوت)
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Honored by School Principal <strong class="text-slate-200">suzanne</strong> for representing the school with the EEZYbotARM MK2 robotic arm at the Al-Shola 28th Exhibition.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095424.jpg?v=2', 'Cert #05: Manarat Al Sharjah Private School — Special Recognition for Robotic Hand')" class="text-cyan-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">2024 / 2025</span>
+          </div>
+        </div>
+
+        <!-- CERT 06: Al-Shola 29th Innovation Exhibition (OzoCore Showcase — May 20, 2025) -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between border-cyan-500/40">
+          <div>
+            <div onclick="openLightbox('20261025_095509.jpg?v=2', 'Cert #06: Al-Shola 29th Innovation Exhibition (May 20, 2025) — OzoCore 250kV Cold-Plasma Reactor Showcase')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095509.jpg?v=2" alt="Al-Shola 29th Innovation Exhibition Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300 font-bold">CERT #06 // 29TH EXPO (OZOCORE)</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-emerald-400 uppercase">Al-Shola 29th Innovation Exhibition • May 20, 2025</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                29th Innovation Exhibition — OzoCore Reactor Showcase
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Certificate of Appreciation for showcasing the <strong class="text-white">OzoCore 250kV Cold-Plasma Reactor</strong> under the theme "Innovate Locally to Compete Globally" (نبتكر محلياً لننافس عالمياً).
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095509.jpg?v=2', 'Cert #06: Al-Shola 29th Innovation Exhibition — May 20, 2025')" class="text-emerald-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">20 May 2025</span>
+          </div>
+        </div>
+
+        <!-- CERT 07: Al-Shola 28th Innovation Exhibition — Certificate of Appreciation (May 8, 2025) -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div onclick="openLightbox('20261025_095520.jpg?v=2', 'Cert #07: Al-Shola 28th Innovation Exhibition — Certificate of Appreciation (May 8, 2025)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095520.jpg?v=2" alt="Al-Shola 28th Innovation Exhibition Appreciation" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-slate-800 border border-slate-600 font-mono text-[10px] text-slate-300 font-bold">CERT #07 // 28TH EXPO</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-cyan-400 uppercase">Al-Shola 28th Innovation Exhibition • May 8, 2025</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                28th Innovation Exhibition — Engineering Participation Honor
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Official Certificate of Appreciation presented by General Director <strong class="text-slate-200">Ibrahim Barakeh</strong> at the 28th Innovation Exhibition in Sharjah.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095520.jpg?v=2', 'Cert #07: Al-Shola 28th Innovation Exhibition — May 8, 2025')" class="text-cyan-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">08 May 2025</span>
+          </div>
+        </div>
+
+        <!-- CERT 08: Al-Shola 11th Information Technology Exhibition (May 11, 2023) -->
+        <div data-cat="robotics" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div onclick="openLightbox('20261025_095340.jpg?v=2', 'Cert #08: Al-Shola 11th Information Technology Exhibition (May 11, 2023)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095340.jpg?v=2" alt="Al-Shola 11th IT Exhibition Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-slate-800 border border-slate-600 font-mono text-[10px] text-slate-300 font-bold">CERT #08 // 11TH IT EXPO</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-cyan-400 uppercase">Al-Shola 11th IT Exhibition • May 11, 2023</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                11th Information Technology Exhibition ("Towards a Digital World")
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Early high-school recognition for software and hardware demonstration at the 11th IT Exhibition (نحو عالم رقمي) in Sharjah.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095340.jpg?v=2', 'Cert #08: Al-Shola 11th IT Exhibition — May 11, 2023')" class="text-cyan-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">11 May 2023</span>
+          </div>
+        </div>
+
+        <!-- CERT 09: Al Bayan School "Warattil" (ورتل) Quran Recitation & Tajweed Competition -->
+        <div data-cat="cultural" class="cert-card hud-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div onclick="openLightbox('20261025_095412.jpg?v=2', 'Cert #09: Al Bayan National Private School — Warattil (ورتل) Holy Quran Recitation & Tajweed Competition (Level 4, Season II)')" class="relative h-52 bg-slate-950 p-3 cursor-pointer group overflow-hidden border-b border-slate-800 flex items-center justify-center">
+              <img src="20261025_095412.jpg?v=2" alt="Warattil Quran Competition Certificate" class="raw-upright max-h-full max-w-full object-contain rounded group-hover:scale-105 transition-transform" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300 font-bold">CERT #09 // CLASSICAL ORATORY</span>
+            </div>
+            <div class="p-5">
+              <div class="font-mono text-[11px] text-emerald-400 uppercase">Al Bayan National School • Season II (2023/2024)</div>
+              <h3 class="font-display text-lg font-bold text-white mt-1">
+                "Warattil" (ورتل) Classical Quranic Recitation &amp; Phonetics (Level 4)
+              </h3>
+              <p class="text-xs text-slate-400 mt-1.5">
+                Demonstrates disciplined memorization, classical Arabic phonetic precision (Tajweed), and poised public recitation under adjudication.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-4 flex items-center justify-between font-mono text-xs">
+            <button onclick="openLightbox('20261025_095412.jpg?v=2', 'Cert #09: Al Bayan National School — Warattil Competition')" class="text-emerald-400 hover:underline flex items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Inspect High-Res Scan
+            </button>
+            <span class="text-slate-500">2023 / 2024</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- UPCOMING CERTIFICATES PLACEHOLDER SLOT -->
+      <!--
+      TODO: Add upcoming 2026 certificates (e.g., AUS Sharakah x Net Impact 2026 THERMOSYNC Certificate, Grade 12 Senior Honors) here:
+      <div data-cat="national" class="cert-card hud-card rounded-2xl ...">...</div>
+      -->
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 07: INDUSTRY EXPOSURE, EXECUTION VELOCITY & WORKBENCH         -->
+    <!-- ===================================================================== -->
+    <section id="exposure" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div id="speed-lab"></div>
+      
+      <!-- Section Header -->
+      <div class="mb-10">
+        <div class="inline-flex items-center gap-2 font-mono text-xs text-pink-400 uppercase tracking-widest mb-2">
+          <span class="px-2 py-0.5 rounded bg-pink-500/15 border border-pink-500/30">SECTION 07 // FIELDWORK, EXPOSURE &amp; EXECUTION VELOCITY</span>
+          <span>• BUILDEX DAMASCUS • GITEX DUBAI • 243 WPM</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+          Industry Exposure &amp; Execution Velocity
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+          Bridging theoretical engineering with industrial reality: from boots-on-the-ground MEP trade show logistics in Damascus to deep-tech startup ecosystems at Dubai Harbour and 243 WPM cognitive execution.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left 6 Columns: BUILDEX Damascus 2025 & GITEX Expand North Star Dubai -->
+        <div class="lg:col-span-6 hud-card rounded-2xl p-6 sm:p-7 space-y-4 border-pink-500/30 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span class="font-mono text-xs text-pink-400 font-bold uppercase">FIELDWORK &amp; INDUSTRIAL LOGISTICS</span>
+                <h3 class="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">
+                  BUILDEX Damascus 2025 &amp; GITEX Dubai
+                </h3>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-pink-500/15 border border-pink-500/30 font-mono text-xs text-pink-300 font-bold">Trade Expos</span>
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mt-4">
+              Real engineering begins on the floor. At <strong class="text-white">BUILDEX Damascus 2025</strong> (the premier international engineering, construction, and MEP trade exhibition in the Levant), I spent hands-on days assisting family with industrial exhibition booth assembly, structural framing, and power logistics—gaining direct, unvarnished exposure to commercial-scale HVAC chillers, power distribution switchgear, building automation, and heavy engineering systems.
+            </p>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mt-2">
+              Paired with regular attendance at <strong class="text-cyan-300">GITEX Expand North Star (Dubai Harbour)</strong>, this fieldwork connects academic physics to supply chains, vendor tolerances, and deployment scale.
+            </p>
+          </div>
+
+          <!-- 4 Clickable Photo Thumbnails: 2 BUILDEX + 2 GITEX -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+            <div onclick="openLightbox('buildex_2025_booth_setup_upright.jpg', 'BUILDEX Damascus 2025: Engineering Exhibition Booth Setup, Electrical Wiring &amp; Logistics')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-pink-400 bg-slate-950">
+              <img src="buildex_2025_booth_setup_upright.jpg" alt="BUILDEX Damascus 2025 Booth Setup" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+              <div class="p-1.5 font-mono text-[9px] text-pink-300 text-center truncate">BUILDEX Setup</div>
+            </div>
+            <div onclick="openLightbox('buildex_2025_floor_upright.jpg', 'BUILDEX Damascus 2025: Industrial Machinery, MEP &amp; Structural Engineering Floor')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-pink-400 bg-slate-950">
+              <img src="buildex_2025_floor_upright.jpg" alt="BUILDEX Damascus 2025 Expo Floor" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+              <div class="p-1.5 font-mono text-[9px] text-pink-300 text-center truncate">BUILDEX Floor</div>
+            </div>
+            <div onclick="openLightbox('Screenshot_20250930_173800_Chrome.jpg', 'GITEX Expand North Star 2025 Official Visitor Badge — Kenan Alchayah')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+              <img src="Screenshot_20250930_173800_Chrome.jpg" alt="Expand North Star Pass" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+              <div class="p-1.5 font-mono text-[9px] text-cyan-300 text-center truncate">GITEX Pass</div>
+            </div>
+            <div onclick="openLightbox('20251015_114207.jpg?v=2', 'At GITEX Expand North Star 2025 — Dubai Harbour Deep-Tech Showcase')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+              <img src="20251015_114207.jpg?v=2" alt="GITEX Dubai Harbour" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+              <div class="p-1.5 font-mono text-[9px] text-slate-300 text-center truncate">Dubai Harbour</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 6 Columns: 243 WPM Velocity & Polyglot Bench -->
+        <div class="lg:col-span-6 space-y-6">
+          <!-- 243 WPM Monkeytype Card -->
+          <div class="hud-card rounded-2xl p-6 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span class="font-mono text-xs text-amber-400 font-bold uppercase">NEURAL-MECHANICAL VELOCITY</span>
+                <h3 class="font-display text-xl font-bold text-white mt-0.5">
+                  243 WPM Peak • 226 WPM @ 100% Accuracy
+                </h3>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-amber-500/15 border border-amber-500/40 font-mono text-xs text-amber-300 font-bold">Top 0.01% Global</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Eliminates latency between hardware architecture and compiled firmware: <strong class="text-amber-300">243 WPM burst</strong> (96% accuracy) and <strong class="text-emerald-300">226 WPM with 100% zero-error precision</strong> on Monkeytype.
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+              <div onclick="openLightbox('Screenshot 2026-05-30 231905.png', 'Verified Monkeytype Telemetry #1: 243 WPM Peak Burst (96% Accuracy, 79% Consistency)')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
+                <img src="Screenshot 2026-05-30 231905.png" alt="243 WPM Monkeytype" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-1.5 font-mono text-[10px] text-amber-300 font-bold text-center">243 WPM Peak (96% Acc)</div>
+              </div>
+              <div onclick="openLightbox('Screenshot 2026-07-31 152432.png', 'Verified Monkeytype Telemetry #2: 226 WPM @ 100% Flawless Accuracy (87% Consistency)')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
+                <img src="Screenshot 2026-07-31 152432.png" alt="226 WPM 100% Accuracy" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-1.5 font-mono text-[10px] text-emerald-300 font-bold text-center">226 WPM @ 100% Accuracy</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Polyglot & Rig Card -->
+          <div class="hud-card rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-mono text-xs text-purple-400 font-bold uppercase">RESEARCH READINESS &amp; POLYGLOT LAB</span>
+                <h4 class="font-display text-base font-bold text-white mt-0.5">
+                  Arabic • English • Japanese (日本語 学習中)
+                </h4>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/30 font-mono text-[10px] text-purple-300">JLPT Track</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div onclick="openLightbox('bc9dc644-2332-4160-9768-8955787ce1de.jpg?v=2', 'Handwritten Japanese Hiragana Workbook Study Notes (め / あめ / おこめ / はじめまして)')" class="group cursor-pointer rounded-lg overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950 shrink-0 w-24 h-16">
+                <img src="bc9dc644-2332-4160-9768-8955787ce1de.jpg?v=2" alt="Japanese Study" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              </div>
+              <div onclick="openLightbox('03204b0f-86b5-4d9c-a3f0-29369db7ce87.jpg', 'Senior 2026 Innovation Exhibition Floor — Representing Manarat Al Sharjah Private School')" class="group cursor-pointer rounded-lg overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950 shrink-0 w-24 h-16">
+                <img src="03204b0f-86b5-4d9c-a3f0-29369db7ce87.jpg" alt="Senior '26 Floor" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Self-studying Japanese kana &amp; vocabulary targeting East Asian robotics labs while operating custom liquid-cooled development rigs.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- CONTACT & SCHOOL LOCATION SECTION (#contact)                          -->
+    <!-- ===================================================================== -->
+    <footer id="contact" class="pt-16 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="hud-card hud-corners rounded-3xl p-8 sm:p-10 border-cyan-500/40">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+          <!-- Left 7 Columns: Direct Admissions Contact Info -->
+          <div class="lg:col-span-7 space-y-5">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 font-mono text-xs text-cyan-300">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>DIRECT ADMISSIONS &amp; SCHOLARSHIP COMMITTEE DISPATCH</span>
+            </div>
+            <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Ready to Contribute to Your University Robotics &amp; Systems Lab.
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Whether you are reviewing my dossier for an undergraduate engineering seat, a full-ride international merit scholarship, or an interview regarding my <strong class="text-cyan-300">250kV OzoCore Reactor</strong>, <strong class="text-purple-300">ASSISTANT-SAN</strong>, or <strong class="text-amber-300">EEZYbotARM MK2</strong>, you can reach me directly anytime:
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <!-- Email Card -->
+              <div class="p-4 rounded-2xl bg-slate-950/90 border border-cyan-500/30 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-mono text-[10px] text-cyan-400 uppercase">Primary Email Address</div>
+                  <a href="mailto:apivotanimator@gmail.com" class="font-mono text-sm font-bold text-white hover:text-cyan-300 truncate block mt-0.5">
+                    apivotanimator@gmail.com
+                  </a>
+                </div>
+                <button onclick="copyText('apivotanimator@gmail.com', 'Email apivotanimator@gmail.com copied!')" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-500/40 font-mono text-xs text-cyan-300 shrink-0">
+                  Copy
+                </button>
+              </div>
+
+              <!-- Phone Card -->
+              <div class="p-4 rounded-2xl bg-slate-950/90 border border-emerald-500/30 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-mono text-[10px] text-emerald-400 uppercase">Direct Phone / WhatsApp (UAE)</div>
+                  <a href="tel:+971563205131" class="font-mono text-sm font-bold text-white hover:text-emerald-300 truncate block mt-0.5">
+                    +971 56 320 5131
+                  </a>
+                </div>
+                <button onclick="copyText('+971 56 320 5131', 'Phone +971 56 320 5131 copied!')" class="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/40 font-mono text-xs text-emerald-300 shrink-0">
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 5 Columns: Verified High School Location Card -->
+          <div class="lg:col-span-5">
+            <div class="p-6 rounded-2xl bg-slate-950/95 border border-purple-500/40 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs text-purple-300 font-bold uppercase flex items-center gap-1.5">
+                  <i data-lucide="graduation-cap" class="w-4 h-4 text-purple-400"></i>
+                  ACADEMIC INSTITUTION LOCATION
+                </span>
+                <span class="px-2 py-0.5 rounded bg-purple-500/20 font-mono text-[10px] text-purple-200">Grade 12 Senior</span>
+              </div>
+              <div>
+                <h3 class="font-display text-xl font-bold text-white">
+                  Manarat Al Sharjah Private School
+                </h3>
+                <div class="font-mono text-xs text-purple-300 mt-0.5">مدرسة منارة الشارقة الخاصة</div>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                  Samnan Suburb (Halwan Area), near University City Road, Sharjah, United Arab Emirates.
+                </p>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-2">
+                <a href="https://www.google.com/maps/search/?api=1&query=Manarat+Al+Sharjah+Private+School+Sharjah+UAE" target="_blank" rel="noopener" class="w-full py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-200 font-mono text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                  <i data-lucide="map" class="w-4 h-4 text-purple-300"></i>
+                  Open Manarat Al Sharjah School in Google Maps ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-slate-500">
+          <div>
+            © 2026 KENAN HUSSAM EDDIN AL CHAYAH (كنان حسام الدين الشياح) • ALL HARDWARE &amp; CODE SELF-ENGINEERED
+          </div>
+          <div class="flex items-center gap-4">
+            <a href="#top" class="text-cyan-400 hover:underline">↑ BACK TO TOP</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- INTERACTIVE JAVASCRIPT ENGINE                                           -->
+  <!-- ======================================================================= -->
+  <script>
+    // Initialize Lucide Icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    // 1. Copy to Clipboard Toast Helper
+    function copyText(text, message) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('copyToast');
+        const toastText = document.getElementById('copyToastText');
+        toastText.textContent = message || 'Copied to clipboard!';
+        toast.classList.remove('translate-y-24', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-24', 'opacity-0');
+        }, 2800);
+      });
+    }
+
+    // 2. High-Resolution Lightbox Modal
+    function openLightbox(src, caption) {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const cap = document.getElementById('lightboxCaption');
+      img.src = src;
+      cap.textContent = caption || '';
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      modal.classList.add('hidden');
+      img.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    document.getElementById('lightboxModal').addEventListener('click', (e) => {
+      if (e.target.id === 'lightboxModal') closeLightbox();
+    });
+
+    // 3. Hero Dual-Video Switcher (new5.mp4 vs NEW4.mp4)
+    function switchHeroVideo(which) {
+      const ozoWrap = document.getElementById('heroVidOzoWrap');
+      const eezyWrap = document.getElementById('heroVidEezyWrap');
+      const ozoVid = document.getElementById('heroVidOzo');
+      const eezyVid = document.getElementById('heroVidEezy');
+      const btnOzo = document.getElementById('heroBtnOzo');
+      const btnEezy = document.getElementById('heroBtnEezy');
+
+      if (which === 'ozocore') {
+        eezyVid.pause();
+        eezyWrap.classList.add('hidden');
+        ozoWrap.classList.remove('hidden');
+        btnOzo.className = 'px-2.5 py-1 rounded bg-cyan-400 text-slate-950 font-bold transition-all';
+        btnEezy.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all';
+      } else {
+        ozoVid.pause();
+        ozoWrap.classList.add('hidden');
+        eezyWrap.classList.remove('hidden');
+        btnEezy.className = 'px-2.5 py-1 rounded bg-purple-400 text-slate-950 font-bold transition-all';
+        btnOzo.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all';
+      }
+    }
+
+    // 4. OzoCore Interactive Engineering Tabs
+    function switchOzoTab(tabName) {
+      ['physics', 'potting', 'bus'].forEach((t) => {
+        const content = document.getElementById('ozoTab-' + t);
+        const btn = document.getElementById('ozoTabBtn-' + t);
+        if (t === tabName) {
+          content.classList.remove('hidden');
+          btn.classList.add('active');
+        } else {
+          content.classList.add('hidden');
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // 5. OzoCore Image & CAD Gallery Filter inside index.html
+    function filterIdxOzoGallery(cat) {
+      ['all', 'cad', 'cw', 'fab', 'reactor'].forEach((c) => {
+        const btn = document.getElementById('idxOzoGalBtn-' + c);
+        if (btn) {
+          if (c === cat) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('#idxOzoGalleryGrid .idx-ozo-item').forEach((card) => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // 6. EEZYbotARM MK2 Video Switcher
+    function switchEezyVideo(src, caption) {
+      const vid = document.getElementById('eezyMainVideo');
+      const cap = document.getElementById('eezyMainVideoCaption');
+      vid.pause();
+      vid.querySelector('source').src = src;
+      vid.load();
+      vid.play().catch(() => {});
+      cap.textContent = caption;
+    }
+
+    // 7. ASSISTANT-SAN 24GHz Radar Eye-Tracking Simulator
+    const faceScreen = document.getElementById('assistantFaceScreen');
+    const leftPupil = document.getElementById('eyeLeftPupil');
+    const rightPupil = document.getElementById('eyeRightPupil');
+    const leftOuter = document.getElementById('eyeLeftOuter');
+    const rightOuter = document.getElementById('eyeRightOuter');
+    const coordReadout = document.getElementById('radarCoordReadout');
+
+    document.addEventListener('mousemove', (e) => {
+      if (!faceScreen) return;
+      const rect = faceScreen.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const maxOffset = 12;
+      const dist = Math.hypot(dx, dy) || 1;
+      const factor = Math.min(dist / 220, 1);
+      const offsetX = (dx / dist) * maxOffset * factor;
+      const offsetY = (dy / dist) * maxOffset * factor;
+
+      leftPupil.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px)`;
+      rightPupil.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px)`;
+
+      // Simulated HLK-LD2450 Radar Coordinates in meters
+      const simX = ((dx / window.innerWidth) * 2.4).toFixed(2);
+      const simY = (1.25 + Math.abs(dy / window.innerHeight) * 1.1).toFixed(2);
+      coordReadout.textContent = `TARGET_1: X=${simX >= 0 ? '+' : ''}${simX}m Y=${simY}m`;
+    });
+
+    function setAssistantEmotion(stateLabel, hexColor) {
+      const badge = document.getElementById('emotionTagBadge');
+      badge.textContent = 'STATE: ' + stateLabel;
+      [leftOuter, rightOuter].forEach((el) => {
+        el.style.borderColor = hexColor;
+        el.style.boxShadow = `0 0 25px ${hexColor}66`;
+      });
+      [leftPupil, rightPupil].forEach((el) => {
+        el.style.backgroundColor = hexColor;
+        el.style.boxShadow = `0 0 15px ${hexColor}`;
+      });
+    }
+
+    // 8. Certificates Category Filter
+    function filterCerts(category) {
+      ['all', 'national', 'robotics', 'cultural'].forEach((c) => {
+        const btn = document.getElementById('certBtn-' + c);
+        if (btn) {
+          if (c === category) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+
+      const cards = document.querySelectorAll('#certGrid .cert-card');
+      cards.forEach((card) => {
+        if (category === 'all' || card.dataset.cat === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // 9. Chart.js Telemetry Visualizations + Single-Slider OzoCore 6–15V Model
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.Chart) return;
+      Chart.defaults.color = '#94a3b8';
+      Chart.defaults.font.family = "'JetBrains Mono', monospace";
+      Chart.defaults.font.size = 10;
+
+      // OzoCore Hardware-Spec Mathematical Model (6.0V - 15.0V PWM -> 25kV AC 65W Max -> 30kV 15-Cap/20-Diode CW)
+      const OZO_DECAY_K = Math.LN2 / (25.0 * 60.0);
+      const OZO_G15 = (5.0 * OZO_DECAY_K) / (1.0 - Math.exp(-OZO_DECAY_K * 60.0));
+      let idxKineticsChart = null;
+      let idxPowerChart = null;
+
+      function simulateIdxOzo(V) {
+        const dt = 10;
+        const pHv = 65.0 * Math.pow(V / 15.0, 2);
+        const gen = OZO_G15 * (pHv / 65.0);
+        const labels = [];
+        const conc = [];
+        let c = 0.0;
+        let tripped = false;
+        let tCut = null;
+        let c60 = 0.0;
+
+        for (let t = 0; t <= 600; t += dt) {
+          labels.push((t / 60).toFixed(1) + 'm');
+          if (t === 60) c60 = c;
+          conc.push(Number(c.toFixed(2)));
+          if (t < 600) {
+            if (!tripped) {
+              const cNext = c + (gen - OZO_DECAY_K * c) * dt;
+              if (cNext >= 8.0) {
+                c = 8.0;
+                tripped = true;
+                if (tCut === null) tCut = (t + dt) / 60.0;
+              } else {
+                c = cNext;
+              }
+            } else {
+              c = c * Math.exp(-OZO_DECAY_K * dt);
+            }
+          }
+        }
+        return { labels, conc, pHv, cwKv: 250.0 * (V / 15.0), c60, tCut };
+      }
+
+      function updateIdxOzoModel(V) {
+        const sim = simulateIdxOzo(V);
+        const vEl = document.getElementById('idxPwmVoltReadout');
+        if (vEl) vEl.textContent = V.toFixed(1) + ' V';
+        const pEl = document.getElementById('idxMetricPower');
+        if (pEl) pEl.textContent = sim.pHv.toFixed(1) + ' W';
+        const kvEl = document.getElementById('idxMetricKv');
+        if (kvEl) kvEl.textContent = '~' + Math.round(sim.cwKv) + ' kV';
+        const o3El = document.getElementById('idxMetricO3');
+        if (o3El) o3El.textContent = sim.c60.toFixed(2) + ' ppm';
+        const cutEl = document.getElementById('idxMetricCutoff');
+        if (cutEl) cutEl.textContent = sim.tCut ? sim.tCut.toFixed(1) + ' min' : 'No Trip (<8 ppm)';
+
+        const warnArr = Array(sim.labels.length).fill(6.0);
+        const cutArr = Array(sim.labels.length).fill(8.0);
+
+        const ctxKinetics = document.getElementById('ozoKineticsChart');
+        if (ctxKinetics) {
+          if (!idxKineticsChart) {
+            idxKineticsChart = new Chart(ctxKinetics, {
+              type: 'line',
+              data: {
+                labels: sim.labels,
+                datasets: [
+                  {
+                    label: `O₃ @ ${V.toFixed(1)}V (ppm)`,
+                    data: sim.conc,
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.14)',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.25
+                  },
+                  {
+                    label: 'Warn (6 ppm)',
+                    data: warnArr,
+                    borderColor: '#f59e0b',
+                    borderDash: [4, 4],
+                    borderWidth: 1.2,
+                    pointRadius: 0,
+                    fill: false
+                  },
+                  {
+                    label: 'Cut-Off (8 ppm)',
+                    data: cutArr,
+                    borderColor: '#ef4444',
+                    borderDash: [5, 3],
+                    borderWidth: 1.5,
+                    pointRadius: 0,
+                    fill: false
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 150 },
+                plugins: { legend: { position: 'bottom' } },
+                scales: {
+                  y: { min: 0, max: 9.5, grid: { color: 'rgba(148,163,184,0.1)' } },
+                  x: { ticks: { maxTicksLimit: 7 }, grid: { color: 'rgba(148,163,184,0.05)' } }
+                }
+              }
+            });
+          } else {
+            idxKineticsChart.data.datasets[0].label = `O₃ @ ${V.toFixed(1)}V (ppm)`;
+            idxKineticsChart.data.datasets[0].data = sim.conc;
+            idxKineticsChart.update();
+          }
+        }
+
+        // Sweep data for Chart 2 (6V to 15V)
+        const vLabels = [];
+        const pCurve = [];
+        const activePt = [];
+        for (let v = 6.0; v <= 15.001; v += 1.0) {
+          vLabels.push(v.toFixed(0) + 'V');
+          const pw = Number((65.0 * Math.pow(v / 15.0, 2)).toFixed(1));
+          pCurve.push(pw);
+          activePt.push(Math.abs(v - Math.round(V)) < 0.2 ? Number(sim.pHv.toFixed(1)) : null);
+        }
+
+        const ctxPower = document.getElementById('ozoPowerChart');
+        if (ctxPower) {
+          if (!idxPowerChart) {
+            idxPowerChart = new Chart(ctxPower, {
+              type: 'line',
+              data: {
+                labels: vLabels,
+                datasets: [
+                  {
+                    label: 'Selected V_PWM',
+                    data: activePt,
+                    borderColor: '#ffffff',
+                    backgroundColor: '#00f2fe',
+                    pointRadius: 6,
+                    showLine: false
+                  },
+                  {
+                    label: '25kV Module Output (W)',
+                    data: pCurve,
+                    borderColor: '#b537f2',
+                    backgroundColor: 'rgba(181, 55, 242, 0.14)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    fill: true,
+                    tension: 0.3
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 150 },
+                plugins: { legend: { position: 'bottom' } },
+                scales: {
+                  y: { min: 0, max: 70, grid: { color: 'rgba(148,163,184,0.1)' } },
+                  x: { grid: { color: 'rgba(148,163,184,0.05)' } }
+                }
+              }
+            });
+          } else {
+            idxPowerChart.data.datasets[0].data = activePt;
+            idxPowerChart.update();
+          }
+        }
+      }
+
+      const idxSlider = document.getElementById('idxPwmSlider');
+      if (idxSlider) {
+        idxSlider.addEventListener('input', (e) => {
+          updateIdxOzoModel(parseFloat(e.target.value));
+        });
+        updateIdxOzoModel(parseFloat(idxSlider.value));
+      }
+
+      // Chart 3: THERMOSYNC vs Baseline Campus Cooling Load
+      const ctxThermo = document.getElementById('thermosyncChart');
+      if (ctxThermo) {
+        new Chart(ctxThermo, {
+          type: 'bar',
+          data: {
+            labels: ['08:00', '10:00', '12:00', '14:00 (Break)', '16:00', '18:00 (Vacant)'],
+            datasets: [
+              {
+                label: 'Static BMS Baseline (kW)',
+                data: [420, 480, 510, 495, 470, 410],
+                backgroundColor: 'rgba(148, 163, 184, 0.35)',
+                borderColor: '#64748b',
+                borderWidth: 1
+              },
+              {
+                label: 'THERMOSYNC Timetable-Synced (kW)',
+                data: [340, 430, 450, 310, 390, 215],
+                backgroundColor: 'rgba(16, 185, 129, 0.65)',
+                borderColor: '#10b981',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { grid: { color: 'rgba(148,163,184,0.1)' } },
+              x: { grid: { color: 'rgba(148,163,184,0.05)' } }
+            }
+          }
+        });
+      }
+    });
+
+    // 10. Subtle Ambient Plasma Particle Canvas
+    (function initCanvas() {
+      const canvas = document.getElementById('circuitCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [];
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      for (let i = 0; i < 42; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.8 + 0.6,
+          c: i % 2 === 0 ? 'rgba(0, 242, 254, 0.35)' : 'rgba(181, 55, 242, 0.35)'
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h;
+          if (p.y > h) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.c;
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    // HUD Card Mouse Spotlight Effect
+    document.querySelectorAll('.hud-card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
+      });
+    });
+  </script>
+</body>
+</html>

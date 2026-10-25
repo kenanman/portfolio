@@ -1,0 +1,25 @@
+# OS Junk
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary & scratch files
+*.tmp
+*.bak
+.vscode/
+test_images.py
+verify.py
+check_links.py
+
+# GitHub 100MB+ blocker
+20250914_200520.mp4
+
+# Unreferenced heavy raw videos (not used in HTML, saves ~600MB)
+20250720_215543.mp4
+20250829_222321.mp4
+20250901_184349.mp4
+20241116_182359.mp4
+20241116_182517.mp4
+20250208_001421.mp4
+20250518_160207.mp4

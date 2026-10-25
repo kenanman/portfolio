@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OzoCore — 250kV High-Voltage Cold-Plasma Ozone Reactor | Kenan Al Chayah</title>
+  <meta name="description" content="Complete engineering dossier for OzoCore: 250kV Cockcroft-Walton high-voltage ozone reactor (25kV AC 6-15V 65W driver, 30kV-rated 15 ceramic capacitors & 20 diodes) with 9-sensor ESP32 safety interlocks, built by Kenan Al Chayah." />
+
+  <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', ' system-ui', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            void: '#050811',
+            obsidian: '#0b101e',
+            plasma: '#00f2fe',
+            corona: '#b537f2',
+            emeraldHud: '#10b981',
+            amberHud: '#f59e0b',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Chart.js & Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-void: #050811;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --purple-glow: rgba(181, 55, 242, 0.35);
+    }
+
+    body {
+      background-color: #050811;
+      color: #f8fafc;
+      overflow-x: hidden;
+      selection-background-color: #00f2fe;
+      selection-color: #050811;
+    }
+
+    /* Engineering Blueprint Grid Overlay */
+    .bg-blueprint {
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(0, 242, 254, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(181, 55, 242, 0.04) 1px, transparent 1px);
+    }
+
+    /* Glassmorphic HUD Card */
+    .hud-card {
+      background: linear-gradient(155deg, rgba(15, 23, 42, 0.86) 0%, rgba(8, 12, 24, 0.94) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.75);
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-card:hover {
+      border-color: rgba(0, 242, 254, 0.42);
+      box-shadow: 0 16px 48px -12px rgba(0, 242, 254, 0.14);
+    }
+
+    .hud-card-plasma:hover {
+      border-color: rgba(181, 55, 242, 0.5);
+      box-shadow: 0 16px 48px -12px rgba(181, 55, 242, 0.18);
+    }
+
+    /* Corner Reticles */
+    .hud-corners {
+      position: relative;
+    }
+    .hud-corners::before,
+    .hud-corners::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .hud-corners::before {
+      top: -1px;
+      left: -1px;
+      border-top: 2px solid #00f2fe;
+      border-left: 2px solid #00f2fe;
+    }
+    .hud-corners::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 2px solid #b537f2;
+      border-right: 2px solid #b537f2;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050811;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f2fe;
+    }
+
+    /* Plasma Glow Text */
+    .plasma-glow-text {
+      text-shadow: 0 0 24px rgba(0, 242, 254, 0.35), 0 0 48px rgba(181, 55, 242, 0.2);
+    }
+
+    /* Filter / Preset Pill Active State */
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(181, 55, 242, 0.18));
+      border-color: #00f2fe;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+    }
+
+    /* Custom High-Voltage PWM Slider */
+    input[type="range"].pwm-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0ea5e9 0%, #00f2fe 45%, #b537f2 80%, #f43f5e 100%);
+      outline: none;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+    }
+    input[type="range"].pwm-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #00f2fe;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9), 0 0 32px rgba(181, 55, 242, 0.6);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].pwm-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+    input[type="range"].pwm-slider::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #00f2fe;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9);
+      cursor: pointer;
+    }
+
+    .raw-upright {
+      image-orientation: none;
+    }
+
+    /* Custom scrollbar hiding */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Visible Cyberpunk HUD Navigation Slider */
+    .hud-nav-slider {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #00f2fe rgba(15, 23, 42, 0.85);
+    }
+    .hud-nav-slider::-webkit-scrollbar {
+      height: 4px;
+    }
+    .hud-nav-slider::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 9999px;
+    }
+    .hud-nav-slider::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #00f2fe, #a855f7);
+      border-radius: 9999px;
+      box-shadow: 0 0 8px rgba(0, 242, 254, 0.8);
+    }
+    .hud-nav-slider::-webkit-scrollbar-thumb:hover {
+      background: #00f2fe;
+    }
+  </style>
+</head>
+
+<body class="bg-blueprint antialiased selection:bg-cyan-400 selection:text-slate-950">
+
+  <!-- Ambient Background Canvas -->
+  <canvas id="circuitCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-35"></canvas>
+
+  <!-- Fullscreen Lightbox Modal -->
+  <div id="lightboxModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/92 backdrop-blur-xl p-4 md:p-8">
+    <button onclick="closeLightbox()" class="absolute top-5 right-5 z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/90 border border-cyan-400/50 text-cyan-300 font-mono text-xs hover:bg-cyan-400 hover:text-slate-950 transition-all">
+      <span>ESC / CLOSE</span>
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+    <div class="max-w-6xl w-full max-h-[90vh] flex flex-col items-center">
+      <div class="relative w-full flex items-center justify-center overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-950/90 p-2 shadow-2xl">
+        <img id="lightboxImg" src="" alt="OzoCore High Resolution Inspection" class="raw-upright max-h-[78vh] max-w-full object-contain rounded-lg" />
+      </div>
+      <p id="lightboxCaption" class="mt-3 font-mono text-xs md:text-sm text-cyan-300 text-center max-w-3xl"></p>
+    </div>
+  </div>
+
+  <!-- Top Telemetry Bar (Continuous Single Line) -->
+  <div class="relative z-40 bg-slate-950/95 border-b border-slate-800/80 py-1.5 px-4 text-[11px] font-mono text-slate-400 overflow-x-auto no-scrollbar whitespace-nowrap">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 min-w-max">
+      <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
+        <span class="inline-flex items-center gap-1.5 text-cyan-400 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          DOSSIER // OZOCORE 250kV REACTOR
+        </span>
+        <span class="text-slate-700">|</span>
+        <span class="text-slate-300">DRIVER: <strong class="text-white">25kV AC (6–15V, 65W Max)</strong></span>
+        <span class="text-slate-700">|</span>
+        <span class="text-purple-300">CW LADDER: <strong class="text-white">30kV-Rated (15 Caps + 20 Diodes)</strong></span>
+        <span class="text-slate-700">|</span>
+        <span class="text-pink-300">ELECTRODES: <strong class="text-white">Rack &amp; Pinion Controllable Gap</strong></span>
+        <span class="text-slate-700">|</span>
+        <span class="text-emerald-400 font-semibold">CHAMBER: 25×25×25 cm (15.6L)</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="index.html#ozocore" class="text-cyan-300 hover:text-white hover:underline transition-colors flex items-center gap-1 font-medium">
+          <span>← Return to Main Portfolio</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Navigation Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-void/90 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[58px] py-2 flex items-center justify-between gap-3">
+      <!-- Left: Compact Logo & Class of 2027 -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a href="index.html#ozocore" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 font-mono text-xs flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0" title="Return to Main Portfolio">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Portfolio</span>
+        </a>
+        <a href="#top" class="flex items-center gap-2 group shrink-0">
+          <img src="file_000000003d3c71f5a85fb76ab88dbfcd.png" alt="OzoCore Logo" class="h-8 w-auto rounded border border-cyan-500/30 bg-slate-950 px-1 py-0.5" />
+          <div class="flex items-center gap-1.5">
+            <span class="font-display font-bold text-white tracking-tight text-sm">OZOCORE</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 rounded-full whitespace-nowrap shrink-0">CLASS OF 2027</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Links with visible custom glowing cyan slider on overflow -->
+      <nav class="flex-1 min-w-0 flex items-center justify-end gap-1.5 font-mono text-[11px] xl:text-xs hud-nav-slider py-1.5 px-1">
+        <a href="#overview" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">01.Overview</a>
+        <a href="#physics-cw" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">02.CW_Multiplier</a>
+        <a href="#architecture" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">03.Safety_&_Sensors</a>
+        <a href="#simulation" class="px-2.5 py-1.5 rounded-lg text-cyan-200 bg-cyan-500/20 border border-cyan-400/50 hover:bg-cyan-500/30 transition-all whitespace-nowrap shrink-0 font-semibold flex items-center gap-1 shadow-sm shadow-cyan-500/20">
+          <i data-lucide="sliders" class="w-3 h-3 text-cyan-400"></i>
+          <span>04.6–15V_Model</span>
+        </a>
+        <a href="#gallery" class="px-2.5 py-1.5 rounded-lg text-purple-300 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all whitespace-nowrap shrink-0">05.Gallery[24]</a>
+        <a href="#war-stories" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">06.War_Stories</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="relative z-10">
+
+    <!-- ===================================================================== -->
+    <!-- 01. HERO & EXECUTIVE OVERVIEW                                         -->
+    <!-- ===================================================================== -->
+    <section id="overview" class="pt-10 pb-16 md:pt-14 md:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+
+        <!-- Left 7 Columns: Title, Specs & Story -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-xs font-mono text-cyan-300 shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>FLAGSHIP HARDWARE DOSSIER // HIGH-VOLTAGE DIELECTRIC CORONA REACTOR</span>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <img src="file_000000003d3c71f5a85fb76ab88dbfcd.png" alt="OzoCore Logo" class="h-14 sm:h-16 w-auto rounded-2xl border border-cyan-500/40 bg-slate-950 p-2 shadow-xl shadow-cyan-500/10" />
+            <div>
+              <h1 class="font-display text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.06]">
+                OzoCore <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 plasma-glow-text">250 kV</span>
+              </h1>
+              <p class="font-mono text-xs sm:text-sm text-cyan-300 mt-1">
+                High-Voltage Cold-Plasma Ozone Synthesis &amp; 9-Sensor Autonomous Safety Reactor
+              </p>
+            </div>
+          </div>
+
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            <strong class="text-white">OzoCore</strong> is a self-contained high-voltage plasma reactor I designed, 3D-printed, hand-soldered, and programmed from scratch to study <strong class="text-cyan-300">corona-discharge ozone synthesis (3O<sub>2</sub> → 2O<sub>3</sub>)</strong> inside a sealed <strong class="text-white">25 × 25 × 25 cm (15.625 L)</strong> clear acrylic chamber. Rather than treating ozone generation as an unmonitored open spark gap, OzoCore pairs an epoxy-potted <strong class="text-purple-300">250 kV Cockcroft-Walton multiplier</strong> with <strong class="text-pink-300">controllable dual electrodes mounted on a precision rack-and-pinion drive</strong> (enabling continuous mechanical gap spacing adjustment to tune Paschen breakdown voltage and prevent thermal arc-over) and a deterministic <strong class="text-emerald-300">ESP32 safety supervisor</strong> monitoring 9 sensors across 4 live displays.
+          </p>
+
+          <!-- Hardware Spec Bento Strip (8 Key Subsystem Metrics) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-cyan-400 uppercase">HV Driver Module</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">25 kV AC</div>
+              <div class="font-mono text-[10px] text-slate-400">6–15V PWM • 65W Max</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-purple-400 uppercase">CW Multiplier Bank</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">30 kV Parts</div>
+              <div class="font-mono text-[10px] text-slate-400">15 Caps + 20 Diodes</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-pink-400 uppercase">Peak Potential</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">~250 kV DC</div>
+              <div class="font-mono text-[10px] text-slate-400">Epoxy-Resin Potted</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-pink-300 uppercase">Controllable Electrodes</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-pink-200 mt-0.5">Rack &amp; Pinion</div>
+              <div class="font-mono text-[10px] text-pink-400">Mechanical Gap Control</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-emerald-400 uppercase">Reaction Chamber</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">15.625 L</div>
+              <div class="font-mono text-[10px] text-slate-400">25×25×25 cm Acrylic</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-amber-400 uppercase">Safety Telemetry</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">9 Sensors</div>
+              <div class="font-mono text-[10px] text-slate-400">SC01-O3 • MQ • 4×US</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-sky-400 uppercase">Visual HUD Outputs</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-white mt-0.5">4 Displays</div>
+              <div class="font-mono text-[10px] text-slate-400">2.8" TFT + 3× OLED</div>
+            </div>
+            <div class="hud-card hud-corners rounded-xl p-3.5">
+              <div class="font-mono text-[10px] text-red-400 uppercase">Auto Cut-Off Relay</div>
+              <div class="font-display text-lg sm:text-xl font-bold text-red-300 mt-0.5">8.0 ppm</div>
+              <div class="font-mono text-[10px] text-slate-400">&lt; 30ms Relay Trip</div>
+            </div>
+          </div>
+
+          <!-- Competition Context Callout -->
+          <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-400/40 space-y-3">
+            <div class="flex items-start gap-3.5">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
+                <i data-lucide="globe" class="w-4 h-4"></i>
+              </div>
+              <div class="text-xs leading-relaxed text-slate-200">
+                <div class="font-mono font-bold text-amber-300 uppercase tracking-wider mb-0.5">
+                  COMPETITION CONTEXT // REGIONAL CANCELLATIONS &amp; LIVE EXHIBITION
+                </div>
+                <p class="text-slate-300">
+                  OzoCore was built last academic year as my flagship hardware system. Because regional geopolitical escalations (<strong class="text-white">the Iran–USA conflict</strong>) caused all major external national science and engineering competitions in that cycle to be cancelled, OzoCore was instead demonstrated live at the <strong class="text-amber-300">Al-Shola 29th Innovation Exhibition</strong> (where its real-time telemetry reached <code class="text-cyan-300 font-mono">4.77 ppm O₃</code> under closed-loop safety supervision).
+                </p>
+              </div>
+            </div>
+
+            <!-- Official Competition Booth Photo Card -->
+            <div onclick="openLightbox('ozocore_competition_booth.jpg', 'Al-Shola 29th Innovation Exhibition: Project Identification Board #17 (School Name: Manarat Al Sharjah Private School, Cycle 3 - AI for Life, Project Title: OZOcore - smart ozone generator)')" class="group cursor-pointer rounded-xl overflow-hidden border border-amber-500/30 bg-slate-950/90 flex flex-col sm:flex-row items-center gap-3 p-2.5 hover:border-amber-400 transition-all">
+              <img src="ozocore_competition_booth.jpg" alt="OzoCore Competition Booth" class="raw-upright w-full sm:w-28 h-24 object-cover rounded-lg group-hover:scale-105 transition-transform" />
+              <div class="text-xs">
+                <div class="font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span>AL-SHOLA EXHIBITION BOOTH // PROJECT IDENTIFICATION BOARD #17</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">
+                  Official exhibition booth display at Manarat Al Sharjah Private School featuring presentation laptop, live OzoCore reactor, and Project Identification Board #17 (Cycle 3 – AI for Life).
+                </p>
+                <span class="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400 mt-1 underline">Click to inspect official booth board ↗</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Jump Buttons -->
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <a href="#simulation" class="px-5 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-display font-bold text-sm shadow-xl shadow-cyan-500/20 flex items-center gap-2 transition-all">
+              <i data-lucide="sliders" class="w-4 h-4"></i>
+              Interactive 6–15V PWM Performance Model
+            </a>
+            <a href="#gallery" class="px-5 py-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-400/40 text-purple-200 font-mono text-xs flex items-center gap-2 transition-all">
+              <i data-lucide="images" class="w-4 h-4 text-purple-400"></i>
+              Browse All 24 Photos &amp; CAD Renders
+            </a>
+          </div>
+        </div>
+
+        <!-- Right 5 Columns: Featured Hero Photo Showcase (Full-Body View of OzoCore) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="hud-card hud-corners rounded-2xl p-4 border-cyan-500/30">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-mono text-xs font-bold text-white tracking-wider uppercase">FULL-BODY ARCHITECTURE // CLICK TO ENLARGE</span>
+              </div>
+              <span class="font-mono text-[10px] text-cyan-300 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">FULL REACTOR</span>
+            </div>
+
+            <!-- Main Featured Image: Full Body OzoCore -->
+            <div onclick="openLightbox('ozocore_full_body.jpg', 'Full-Body View of OzoCore: Top Solar Panel, 25×25×25 cm Sealed Acrylic Reaction Chamber, Controllable Corona Electrodes on Rack &amp; Pinion Drive, Internal Sensor Array, 3D-Printed Base Console &amp; Side CW Multiplier')" class="group relative rounded-xl overflow-hidden border border-slate-700 hover:border-cyan-400 cursor-pointer bg-slate-950">
+              <img src="ozocore_full_body.jpg" alt="OzoCore Full-Body Architecture" class="raw-upright w-full h-[360px] sm:h-[400px] object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+              <div class="absolute bottom-3 inset-x-3 flex items-end justify-between gap-2">
+                <div>
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">FULL-BODY PHYSICAL BUILD</span>
+                  <div class="font-display font-bold text-white text-sm mt-1">250kV Sealed Acrylic Reactor, Rack &amp; Pinion Electrodes &amp; Telemetry Console</div>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-900/90 border border-cyan-400/40 font-mono text-[10px] text-cyan-300 shrink-0">Inspect ↗</span>
+              </div>
+            </div>
+
+            <!-- 4-Thumbnail Strip -->
+            <div class="grid grid-cols-4 gap-2.5 mt-3">
+              <button onclick="openLightbox('ozocore_competition_booth.jpg', 'Al-Shola 29th Innovation Exhibition: Project Identification Board #17, Presentation Laptop & Live OzoCore Setup')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-amber-400 h-20">
+                <img src="ozocore_competition_booth.jpg" alt="Exhibition Booth" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/80 text-[9px] font-mono text-amber-300 py-0.5 text-center">Expo Booth #17</span>
+              </button>
+              <button onclick="openLightbox('20260520_095443.jpg', 'Live Exhibition Run: O3 = 4.77 ppm, Temp: 24.7°C, Hum: 45.5% across TFT & Dual OLEDs')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-cyan-400 h-20">
+                <img src="20260520_095443.jpg" alt="Live Telemetry Console" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/80 text-[9px] font-mono text-cyan-300 py-0.5 text-center">Live HUD 4.77ppm</span>
+              </button>
+              <button onclick="openLightbox('5c553847-0efb-46fc-855b-c03f0d9de66f.jpg', 'Hand-Soldering the Cockcroft-Walton Multiplier Bank: 15 Ceramic Capacitors (30kV-rated) & 20 High-Voltage Diodes on Silicone Mat')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-purple-400 h-20">
+                <img src="5c553847-0efb-46fc-855b-c03f0d9de66f.jpg" alt="15 Caps 20 Diodes CW Ladder" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/80 text-[9px] font-mono text-purple-300 py-0.5 text-center">15 Caps / 20 Diodes</span>
+              </button>
+              <button onclick="openLightbox('20250901_183740.jpg', '250kV Purple Corona Plasma Discharge Arc Across the Electrode Gap During High-Voltage Bench Testing')" class="group relative rounded-lg overflow-hidden border border-slate-700 hover:border-pink-400 h-20">
+                <img src="20250901_183740.jpg" alt="250kV Corona Arc" class="raw-upright w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                <span class="absolute bottom-0 inset-x-0 bg-black/80 text-[9px] font-mono text-pink-300 py-0.5 text-center">250kV Corona Arc</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 02. HIGH-VOLTAGE PHYSICS & COCKCROFT-WALTON MULTIPLIER ARCHITECTURE   -->
+    <!-- ===================================================================== -->
+    <section id="physics-cw" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="mb-10">
+        <div class="inline-flex items-center gap-2 font-mono text-xs text-purple-400 uppercase tracking-widest mb-2">
+          <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/30">SECTION 02 // HIGH-VOLTAGE POWER ELECTRONICS &amp; PLASMA CHEMISTRY</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          From 6–15V PWM Input to 250 kV Corona Discharge
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+          How OzoCore steps a low-voltage DC input up to ~250,000 Volts to split diatomic oxygen (O<sub>2</sub>) into triatomic ozone (O<sub>3</sub>) without arc flashovers.
+        </p>
+      </div>
+
+      <!-- 5-Stage Pipeline Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-10">
+        <div class="hud-card rounded-2xl p-5 border-t-2 border-t-cyan-400">
+          <div class="font-mono text-[11px] text-cyan-400 font-bold mb-1">STAGE 01 // INPUT CONTROL</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">6–15V Manual PWM Knob</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            A front-mounted <strong class="text-white">10A PWM rotary controller</strong> modulates the DC supply rail between <strong class="text-cyan-300">6.0 V and 15.0 V</strong>, monitored live on a dedicated 3-digit 7-segment LED voltmeter.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-5 border-t-2 border-t-blue-400">
+          <div class="font-mono text-[11px] text-blue-400 font-bold mb-1">STAGE 02 // HV AC DRIVER</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">25 kV AC Module (65W Max)</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            The 6–15V rail feeds a high-frequency <strong class="text-white">25 kV AC step-up module</strong> rated up to <strong class="text-blue-300">65 Watts maximum output</strong> at 15V, gated by an ESP32 safety relay.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-5 border-t-2 border-t-purple-400">
+          <div class="font-mono text-[11px] text-purple-400 font-bold mb-1">STAGE 03 // CW MULTIPLIER</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">15 Caps + 20 Diodes (30kV)</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            A custom <strong class="text-purple-300">Cockcroft-Walton voltage multiplier</strong> built from <strong class="text-white">30 kV-rated components</strong> (<strong class="text-cyan-300">15 ceramic capacitors</strong> and <strong class="text-cyan-300">20 HV diodes</strong>) Vacuum-potted in clear epoxy resin to reach <strong class="text-white">~250 kV</strong>.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-5 border-t-2 border-t-pink-400">
+          <div class="font-mono text-[11px] text-pink-400 font-bold mb-1">STAGE 04 // RACK &amp; PINION ELECTRODES</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Controllable Corona Gap</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Inside the 15.6 L chamber, dual electrodes are <strong class="text-white">mounted on a precision rack-and-pinion drive</strong>. Mechanically controlling the gap spacing fine-tunes field intensity (\(E = V/d\)) to maximize violet corona ionization (<strong class="text-pink-300">O<sub>2</sub> → 2O• → O<sub>3</sub></strong>) while preventing thermal arc-overs.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-5 border-t-2 border-t-emerald-400">
+          <div class="font-mono text-[11px] text-emerald-400 font-bold mb-1">STAGE 05 // CLOSED-LOOP</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">8 ppm Auto Cut-Off</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            The <code class="text-cyan-300 font-mono">SC01-O3</code> electrochemical sensor tracks chamber concentration from <strong class="text-white">0–10 ppm</strong>, triggering a warning at <strong class="text-amber-300">6 ppm</strong> and cutting the HV relay at <strong class="text-red-400">8 ppm</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Detailed CW Multiplier & Chemical Kinetics Split -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 hud-card rounded-2xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="zap" class="w-5 h-5 text-purple-400"></i>
+              Why 30 kV-Rated Parts &amp; Epoxy Encapsulation Were Essential
+            </h3>
+            <span class="font-mono text-xs text-purple-300 px-2.5 py-1 rounded bg-purple-500/15 border border-purple-500/30">15 CAPS • 20 DIODES</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Stepping a <strong class="text-white">25 kV AC high-frequency driver (6–15V input, 65W max)</strong> up to <strong class="text-cyan-300">~250 kV</strong> requires a multi-stage Cockcroft-Walton charge-pump cascade. During each half-cycle of the 25 kV AC input, charge is transferred progressively up the ladder of <strong class="text-white">15 high-voltage ceramic capacitors</strong> through <strong class="text-white">20 directional high-voltage rectifier diodes</strong>, each rated for <strong class="text-purple-300">30 kV</strong> to provide safety margin above the 25 kV stage-to-stage swing.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div class="p-3.5 rounded-xl bg-slate-950/90 border border-purple-500/30">
+              <div class="font-mono text-[9px] text-purple-400 uppercase mb-1">Dielectric Breakdown</div>
+              <div class="font-mono text-xs text-white font-bold">Air: ~3 kV/mm vs Epoxy: ~20 kV/mm</div>
+              <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                Potted in clear epoxy resin to eliminate external corona flashovers and lock 30kV parts securely.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-950/90 border border-pink-500/30">
+              <div class="font-mono text-[9px] text-pink-400 uppercase mb-1">Rack &amp; Pinion Control</div>
+              <div class="font-mono text-xs text-white font-bold">Paschen Gap Actuation (d)</div>
+              <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                Mechanical rack-and-pinion adjusts electrode gap distance \(d\) to optimize \(E = V/d\) and prevent arc breakdown.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
+              <div class="font-mono text-[9px] text-cyan-400 uppercase mb-1">Plasma Stoichiometry</div>
+              <div class="font-mono text-xs text-white font-bold">3 O₂ + Energy → 2 O₃</div>
+              <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                Non-thermal corona splits O₂ into radical oxygen without thermal degradation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 hud-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="font-mono text-xs text-cyan-400 font-bold uppercase mb-2">HARDWARE PROOF // MULTIPLIER LADDER &amp; POTTED BLOCK</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div onclick="openLightbox('20250829_222318.jpg', 'Assembled Cockcroft-Walton Multiplier Ladder (15× 30kV Ceramic Capacitors + 20× 30kV Diodes) with Brass Corona Electrode')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-700 hover:border-purple-400 bg-slate-950">
+                <img src="20250829_222318.jpg" alt="CW Ladder on Mat" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-purple-300">Unpotted 30kV Ladder</div>
+              </div>
+              <div onclick="openLightbox('20260126_135727.jpg', 'Clear Epoxy-Resin Potted CW Multiplier Block Mounted Beside the 25×25×25 cm Acrylic Chamber')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-700 hover:border-cyan-400 bg-slate-950">
+                <img src="20260126_135727.jpg" alt="Epoxy Potted CW Block" class="raw-upright w-full h-36 object-cover group-hover:scale-105 transition-transform" />
+                <div class="p-2 font-mono text-[10px] text-cyan-300">Epoxy-Potted CW Block</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 font-mono text-xs space-y-1.5">
+            <div class="flex justify-between"><span class="text-slate-400">HV Driver Input:</span><span class="text-cyan-300 font-bold">6.0 V – 15.0 V DC (PWM Knob)</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">HV Driver Output:</span><span class="text-white font-bold">25 kV AC @ up to 65 W Max</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Multiplier Topology:</span><span class="text-purple-300 font-bold">15 Ceramic Caps + 20 Diodes (30kV)</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Electrode Actuation:</span><span class="text-pink-300 font-bold">Controllable Rack &amp; Pinion Gap</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Peak Corona Potential:</span><span class="text-pink-400 font-bold">~250 kV across SS Electrodes</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 03. SYSTEM ARCHITECTURE, 9 SENSORS, 4 DISPLAYS & DEFENSE-IN-DEPTH     -->
+    <!-- ===================================================================== -->
+    <section id="architecture" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="mb-10">
+        <div class="inline-flex items-center gap-2 font-mono text-xs text-emerald-400 uppercase tracking-widest mb-2">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30">SECTION 03 // EMBEDDED TELEMETRY &amp; DEFENSE-IN-DEPTH SAFETY</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          9 Sensors • 38-Pin ESP32 Supervisor • 4 Displays • 4 Shut-Off Paths
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+          Because high-voltage plasma and concentrated ozone are both hazardous, OzoCore is architected so that no single software bug or operator oversight can leave the 250 kV multiplier energized in an unsafe state.
+        </p>
+      </div>
+
+      <!-- 3-Column Inputs -> ESP32 -> Outputs Architecture -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+        <!-- Column 1: 9 Sensor Inputs -->
+        <div class="hud-card rounded-2xl p-6 border-l-4 border-l-cyan-400">
+          <div class="font-mono text-xs text-cyan-400 font-bold uppercase mb-3 flex items-center justify-between">
+            <span>INPUTS // 9 SENSORS + 3 CONTROLS</span>
+            <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-[10px]">3.3V LOGIC</span>
+          </div>
+          <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300">
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">01.</span><div><strong class="text-white">SC01-O3 (Electrochemical):</strong> Primary chamber ozone sensor (<code class="text-cyan-300 font-mono">0–10 ppm</code> range).</div></li>
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">02.</span><div><strong class="text-white">MQ-135 (Air Quality):</strong> Oxidizing gas &amp; air contaminant sensor (raw ADC <code class="text-cyan-300 font-mono">0–4095</code>).</div></li>
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">03.</span><div><strong class="text-white">MQ-2 (Smoke / Combustible):</strong> Detects smoke or arcing insulation byproducts inside the chamber.</div></li>
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">04.</span><div><strong class="text-white">DHT22 (Temp &amp; Humidity):</strong> Tracks thermal buildup (<code class="text-cyan-300 font-mono">°C</code>) and relative humidity (<code class="text-cyan-300 font-mono">%RH</code>).</div></li>
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">05.</span><div><strong class="text-white">IR Chamber-Lift Interlock:</strong> Optical barrier under the acrylic lid — trips HV instantly if lifted.</div></li>
+            <li class="flex items-start gap-2"><span class="text-cyan-400 font-mono font-bold">06–09.</span><div><strong class="text-white">4× HC-SR04 Ultrasonics:</strong> 360° perimeter proximity array (<code class="text-cyan-300 font-mono">&lt; 30 cm</code> spectator alert).</div></li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Central Controller & Power Rails -->
+        <div class="hud-card rounded-2xl p-6 border-l-4 border-l-purple-400 flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-xs text-purple-400 font-bold uppercase mb-3 flex items-center justify-between">
+              <span>CORE // 38-PIN ESP32 SUPERVISOR</span>
+              <span class="px-2 py-0.5 rounded bg-purple-500/10 text-[10px]">NON-BLOCKING</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+              A single <strong class="text-white">38-pin ESP32</strong> orchestrates all 9 sensors, 4 displays, the 24-LED addressable status ring, the buzzer, and the HV safety relay using a deterministic <code class="text-cyan-300 font-mono">millis()</code> round-robin state machine (<strong class="text-emerald-300">zero <code class="font-mono">delay()</code> calls</strong>).
+            </p>
+            <div class="space-y-2 font-mono text-xs">
+              <div class="p-2.5 rounded-lg bg-slate-950/90 border border-slate-800">
+                <span class="text-purple-400 font-bold">SPI Bus (HSPI):</span> <span class="text-slate-300">2.8" ILI9341 240×320 Color TFT</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950/90 border border-slate-800">
+                <span class="text-cyan-400 font-bold">Dual I²C / Mux:</span> <span class="text-slate-300">3× 0.96" SSD1306 OLEDs (all <code class="text-cyan-300">0x3C</code>)</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950/90 border border-slate-800">
+                <span class="text-emerald-400 font-bold">ADC1 Channels:</span> <span class="text-slate-300">SC01-O3, MQ-135, MQ-2 Analog Reads</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-400">
+            Power Architecture: Top Solar Panel + Isolated 6–15V HV Bus + Dual Regulated 5V / 3.3V Rails (Common GND).
+          </div>
+        </div>
+
+        <!-- Column 3: 4 Displays & Actuators -->
+        <div class="hud-card rounded-2xl p-6 border-l-4 border-l-emerald-400">
+          <div class="font-mono text-xs text-emerald-400 font-bold uppercase mb-3 flex items-center justify-between">
+            <span>OUTPUTS // 4 DISPLAYS + RELAY + LED RING</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-[10px]">LIVE HUD</span>
+          </div>
+          <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300">
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-mono font-bold">01.</span><div><strong class="text-white">2.8" ILI9341 Color TFT:</strong> Main dashboard displaying all sensor values, system state, and full-screen emergency alerts.</div></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-mono font-bold">02.</span><div><strong class="text-white">OLED #1 (Gas Monitor):</strong> Dedicated high-contrast readout for <code class="text-cyan-300 font-mono">O3 ppm</code>, <code class="text-cyan-300 font-mono">MQ-135</code>, and <code class="text-cyan-300 font-mono">MQ-2</code>.</div></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-mono font-bold">03.</span><div><strong class="text-white">OLED #2 (Environment):</strong> Live <code class="text-cyan-300 font-mono">DHT22</code> temperature (<code class="text-cyan-300 font-mono">°C</code>), humidity (<code class="text-cyan-300 font-mono">%</code>), and IR chamber lock status.</div></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-mono font-bold">04.</span><div><strong class="text-white">OLED #3 + 7-Seg Voltmeter:</strong> Mirrored observer OLED + hardware <code class="text-amber-300 font-mono">6.0–15.0V</code> PWM voltage readout.</div></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-mono font-bold">05.</span><div><strong class="text-white">24-LED WS2812B Ring + Buzzer + HV Relay:</strong> 360° color-coded state ring, acoustic alarm, and automatic HV relay cut-off.</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4 Independent Shut-Off Paths + Sensor Threshold Table -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 4 Independent Shut-Off Paths -->
+        <div class="lg:col-span-5 hud-card rounded-2xl p-6 space-y-4">
+          <div class="font-mono text-xs text-red-400 font-bold uppercase flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            4 INDEPENDENT SHUT-OFF PATHS (DEFENSE IN DEPTH)
+          </div>
+          <div class="space-y-2.5 text-xs">
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800">
+              <div class="font-mono font-bold text-white">1. Rear Master Hardware Switch</div>
+              <p class="text-slate-400 mt-0.5">Physically breaks the main power rail at the rear of the chassis — completely independent of the ESP32.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800">
+              <div class="font-mono font-bold text-white">2. Front Quick-Access Kill Switch</div>
+              <p class="text-slate-400 mt-0.5">Front-mounted hardware toggle switch that immediately cuts power to the 25 kV AC driver module.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800">
+              <div class="font-mono font-bold text-white">3. Front Manual PWM Voltage Knob (6–15V)</div>
+              <p class="text-slate-400 mt-0.5">Allows the operator to smoothly dial down the input voltage or turn the HV driver off manually at any time.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-red-500/40">
+              <div class="font-mono font-bold text-red-300">4. ESP32 Automatic Safety Relay Cut-Off</div>
+              <p class="text-slate-300 mt-0.5">Firmware-controlled relay opens within milliseconds if <code class="text-cyan-300 font-mono">O₃ ≥ 8 ppm</code>, <code class="text-cyan-300 font-mono">Temp ≥ 35°C</code>, <code class="text-cyan-300 font-mono">MQ ≥ 3000</code>, or the acrylic chamber is lifted.</p>
+            </div>
+          </div>
+
+          <!-- 24-LED WS2812B Ring States -->
+          <div class="pt-2">
+            <div class="font-mono text-[11px] text-slate-400 uppercase mb-2">24-LED WS2812B Status Ring States:</div>
+            <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+              <div class="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">● Green: Standby / Safe</div>
+              <div class="px-2.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">● Cyan: Generating O₃</div>
+              <div class="px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">● Orange: Warning Level</div>
+              <div class="px-2.5 py-1.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300">● Flashing Red: HV Cut-Off</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sensor Threshold Matrix Table -->
+        <div class="lg:col-span-7 hud-card rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-xs text-cyan-400 font-bold uppercase mb-3">
+              FIRMWARE SAFETY THRESHOLD MATRIX (WARNING VS. AUTOMATIC HV RELAY CUT-OFF)
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-800">
+              <table class="w-full text-left font-mono text-xs">
+                <thead class="bg-slate-950 text-cyan-400 border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">SENSOR</th>
+                    <th class="p-3">PARAMETER</th>
+                    <th class="p-3 text-emerald-400">SAFE</th>
+                    <th class="p-3 text-amber-400">WARNING</th>
+                    <th class="p-3 text-red-400">AUTO HV CUT-OFF</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/70 bg-slate-900/50 text-slate-300">
+                  <tr>
+                    <td class="p-3 font-bold text-white">SC01-O3</td>
+                    <td class="p-3">Ozone (O₃)</td>
+                    <td class="p-3 text-emerald-300">&lt; 6.0 ppm</td>
+                    <td class="p-3 text-amber-300">≥ 6.0 ppm</td>
+                    <td class="p-3 text-red-300 font-bold">≥ 8.0 ppm (Relay OFF)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">MQ-135</td>
+                    <td class="p-3">Air Quality (ADC)</td>
+                    <td class="p-3 text-emerald-300">&lt; 2000</td>
+                    <td class="p-3 text-amber-300">≥ 2000</td>
+                    <td class="p-3 text-red-300 font-bold">≥ 3000 (Relay OFF)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">MQ-2</td>
+                    <td class="p-3">Smoke / Gas (ADC)</td>
+                    <td class="p-3 text-emerald-300">&lt; 2000</td>
+                    <td class="p-3 text-amber-300">≥ 2000</td>
+                    <td class="p-3 text-red-300 font-bold">≥ 3000 (Relay OFF)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">DHT22 (Temp)</td>
+                    <td class="p-3">Chamber Temp</td>
+                    <td class="p-3 text-emerald-300">&lt; 30.0 °C</td>
+                    <td class="p-3 text-amber-300">≥ 30.0 °C</td>
+                    <td class="p-3 text-red-300 font-bold">≥ 35.0 °C (Relay OFF)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">DHT22 (Hum)</td>
+                    <td class="p-3">Rel. Humidity</td>
+                    <td class="p-3 text-emerald-300">&lt; 80 %</td>
+                    <td class="p-3 text-amber-300">≥ 80 %</td>
+                    <td class="p-3 text-red-300 font-bold">≥ 90 % (Relay OFF)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">IR Interlock</td>
+                    <td class="p-3">Chamber Lid Seated</td>
+                    <td class="p-3 text-emerald-300">Seated (LOW)</td>
+                    <td class="p-3 text-slate-500">—</td>
+                    <td class="p-3 text-red-300 font-bold">Lifted → Instant Cut-Off</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold text-white">4× HC-SR04</td>
+                    <td class="p-3">360° Proximity</td>
+                    <td class="p-3 text-emerald-300">≥ 30 cm</td>
+                    <td class="p-3 text-amber-300 font-bold">&lt; 30 cm (Buzzer)</td>
+                    <td class="p-3 text-slate-400">Acoustic &amp; Visual Alert</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 04. SINGLE-SLIDER (6V–15V PWM) MODELED PERFORMANCE SIMULATOR          -->
+    <!-- ===================================================================== -->
+    <section id="simulation" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="hud-card hud-corners rounded-3xl p-6 sm:p-10 border-cyan-500/40 relative overflow-hidden">
+        <!-- Ambient Glow -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Section Header -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6 relative z-10">
+          <div>
+            <div class="inline-flex flex-wrap items-center gap-2 font-mono text-xs text-cyan-300 uppercase tracking-widest mb-2">
+              <span class="px-2.5 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 font-bold">
+                SECTION 04 // INTERACTIVE SINGLE-KNOB PWM PERFORMANCE MODEL
+              </span>
+            </div>
+            <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              6.0 V – 15.0 V PWM Input vs. Reactor Output Simulator
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-1.5 max-w-3xl">
+              On the physical OzoCore console, output power is controlled by a <strong class="text-white">single manual PWM knob</strong> that varies the DC drive voltage into the <strong class="text-cyan-300">25 kV AC module from 6.0 V to 15.0 V (up to 65 W max output)</strong>. Drag the voltage slider below to inspect how the PWM setting governs corona power, ozone synthesis kinetics, and automatic relay cut-off timing.
+            </p>
+          </div>
+
+          <!-- Explicit Modeled-Values Disclaimer Badge -->
+          <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/40 max-w-md shrink-0">
+            <div class="font-mono text-[11px] font-bold text-amber-300 uppercase flex items-center gap-1.5">
+              <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+              <span>MODELED VALUES BASED ON HARDWARE SPECS</span>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+              Curves below represent <strong class="text-white">physics-modeled values</strong> derived from OzoCore’s hardware specifications (<strong class="text-cyan-300">25 kV AC module, 6–15 V input, 65 W max output; 30 kV-rated 15-cap / 20-diode CW multiplier; rack-and-pinion controllable electrode gap; 15.625 L chamber; 8 ppm relay cut-off</strong>) and anchored to our observed <code class="text-cyan-300 font-mono">~5 ppm in 60s @ 15V</code> benchmark.
+            </p>
+          </div>
+        </div>
+
+        <!-- SINGLE SLIDER CONTROL DECK (6V to 15V PWM KNOB) -->
+        <div class="p-6 rounded-2xl bg-slate-950/95 border border-cyan-500/40 mb-8 relative z-10 shadow-2xl">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div>
+              <label for="pwmVoltageSlider" class="font-display text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+                <i data-lucide="gauge" class="w-5 h-5 text-cyan-400"></i>
+                <span>Front Manual PWM Knob Voltage (<code class="text-cyan-300 font-mono">6.0 V</code> to <code class="text-cyan-300 font-mono">15.0 V</code>)</span>
+              </label>
+              <p class="font-mono text-xs text-slate-400 mt-0.5">
+                Controls the 25 kV AC High-Frequency Driver Module (65 W max output @ 15.0 V) feeding the 15-Cap / 20-Diode 30kV CW Multiplier
+              </p>
+            </div>
+
+            <!-- Live Digital 7-Segment Style Readout + Quick Presets -->
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="px-4 py-2 rounded-xl bg-black border-2 border-cyan-400/60 shadow-inner flex items-baseline gap-2">
+                <span class="font-mono text-[10px] text-slate-400 uppercase">PWM BUS:</span>
+                <span id="pwmVoltReadout" class="font-mono text-2xl sm:text-3xl font-extrabold text-cyan-300 tracking-tight">15.0 V</span>
+              </div>
+              <div class="flex items-center gap-1.5 font-mono text-xs">
+                <button onclick="setPwmVoltage(6.0)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition-all">6V Min</button>
+                <button onclick="setPwmVoltage(9.0)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition-all">9V Low</button>
+                <button onclick="setPwmVoltage(12.0)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition-all">12V Med</button>
+                <button onclick="setPwmVoltage(15.0)" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 text-cyan-200 font-bold transition-all">15V Max (65W)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Single Range Slider -->
+          <div class="px-1 py-2">
+            <input id="pwmVoltageSlider" type="range" min="6.0" max="15.0" step="0.5" value="15.0" class="pwm-slider" />
+            <div class="flex justify-between font-mono text-[11px] text-slate-400 mt-2 px-1">
+              <span>6.0 V (Corona Threshold • ~10.4 W)</span>
+              <span>9.0 V (~23.4 W)</span>
+              <span>12.0 V (~41.6 W)</span>
+              <span>15.0 V (Max Output • 65.0 W / ~250 kV)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Live Modeled Readout Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8 relative z-10">
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-cyan-400 uppercase">25kV Module Output</div>
+            <div id="metricHvPower" class="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">65.0 W</div>
+            <div id="metricTotalPower" class="font-mono text-[10px] text-slate-400">68.8 W Total w/ MCU</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-purple-400 uppercase">Est. CW Peak Potential</div>
+            <div id="metricCwKv" class="font-display text-xl sm:text-2xl font-bold text-purple-300 mt-0.5">~250 kV</div>
+            <div class="font-mono text-[10px] text-slate-400">15 Caps / 20 Diodes</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-emerald-400 uppercase">O₃ at t = 60 sec</div>
+            <div id="metricO3At60s" class="font-display text-xl sm:text-2xl font-bold text-emerald-300 mt-0.5">5.00 ppm</div>
+            <div class="font-mono text-[10px] text-slate-400">In 15.625 L Chamber</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-amber-400 uppercase">Time to 6 ppm Warn</div>
+            <div id="metricTimeWarn" class="font-display text-xl sm:text-2xl font-bold text-amber-300 mt-0.5">1.2 min</div>
+            <div class="font-mono text-[10px] text-slate-400">Orange Ring + Buzzer</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-red-400 uppercase">Time to 8 ppm Cut-Off</div>
+            <div id="metricTimeCutoff" class="font-display text-xl sm:text-2xl font-bold text-red-400 mt-0.5">1.6 min</div>
+            <div class="font-mono text-[10px] text-slate-400">ESP32 Trips HV Relay</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <div class="font-mono text-[10px] text-sky-400 uppercase">Total O₃ Produced</div>
+            <div id="metricTotalMass" class="font-display text-xl sm:text-2xl font-bold text-sky-300 mt-0.5">0.260 mg</div>
+            <div class="font-mono text-[10px] text-slate-400">Over 10 min Run</div>
+          </div>
+        </div>
+
+        <!-- 4 Interactive Chart.js Graphs (2x2 Grid) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+          <!-- Graph 1: Chamber Ozone Concentration vs Time -->
+          <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-cyan-400 font-bold uppercase">01 // Modeled Chamber O₃ vs. Time (0–10 min)</span>
+              <span class="font-mono text-[10px] text-slate-400">SC01-O3 (0–10 ppm)</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">
+              Shows ozone synthesis inside the 15.625 L chamber until hitting the <strong class="text-red-400">8.0 ppm automatic relay cut-off</strong>, followed by natural thermal decay (<code class="text-cyan-300 font-mono">2O₃ → 3O₂</code>).
+            </p>
+            <div class="h-64">
+              <canvas id="simChartConcentration"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 2: PWM Voltage Sweep Comparison (6V, 9V, 12V, 15V) -->
+          <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-purple-400 font-bold uppercase">02 // PWM Voltage Family Comparison (6V–15V)</span>
+              <span class="font-mono text-[10px] text-slate-400">Active Setting Highlighted</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">
+              Compares your currently selected PWM knob voltage against fixed reference curves at <strong class="text-white">6 V, 9 V, 12 V, and 15 V (65W max)</strong>.
+            </p>
+            <div class="h-64">
+              <canvas id="simChartVoltageFamily"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 3: 25kV AC Driver Power (W) & Est. CW Multiplier Voltage (kV) vs PWM Input -->
+          <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-emerald-400 font-bold uppercase">03 // 25kV Driver Power (65W Max) &amp; CW Potential vs. V_PWM</span>
+              <span class="font-mono text-[10px] text-slate-400">Hardware Spec Curve</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">
+              Modeled transfer curve of the <strong class="text-white">25 kV AC module (6–15V, 65W max)</strong> and <strong class="text-purple-300">30kV-rated 15-cap / 20-diode CW multiplier</strong> across the PWM knob range.
+            </p>
+            <div class="h-64">
+              <canvas id="simChartPowerCurve"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 4: Cumulative Ozone Mass (mg) & Electrical Energy (Wh) -->
+          <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-amber-400 font-bold uppercase">04 // Cumulative O₃ Mass (mg) &amp; Energy Consumed (Wh)</span>
+              <span class="font-mono text-[10px] text-slate-400">10-Minute Cycle</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">
+              Tracks total synthesized ozone mass (<code class="text-cyan-300 font-mono">1 ppm ≈ 2.0 mg/m³</code> in 15.625 L) and total Wh drawn from the supply rail before and after relay cut-off.
+            </p>
+            <div class="h-64">
+              <canvas id="simChartMassEnergy"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 05. COMPLETE OZOCORE IMAGE & CAD ARCHIVE (22 ITEMS — NO VIDEOS)       -->
+    <!-- ===================================================================== -->
+    <section id="gallery" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+        <div>
+          <div class="inline-flex items-center gap-2 font-mono text-xs text-purple-400 uppercase tracking-widest mb-2">
+            <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/30">SECTION 05 // COMPLETE HARDWARE, CAD &amp; TELEMETRY ARCHIVE</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            OzoCore Visual Engineering Gallery (24 Images &amp; CAD Renders)
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mt-1.5 max-w-3xl">
+            Every stage of OzoCore’s creation — from parametric 3D CAD modeling and 30 kV capacitor/diode soldering to FDM 3D printing, epoxy resin encapsulation, and live multi-display exhibition telemetry. Click any card to inspect in full resolution.
+          </p>
+        </div>
+
+        <!-- Category Filter Buttons -->
+        <div class="flex flex-wrap gap-2 font-mono text-xs shrink-0">
+          <button onclick="filterGallery('all')" id="galBtn-all" class="tab-btn active px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300 transition-all">
+            All Media [24]
+          </button>
+          <button onclick="filterGallery('cad')" id="galBtn-cad" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300 transition-all">
+            3D CAD &amp; Design [5]
+          </button>
+          <button onclick="filterGallery('cw')" id="galBtn-cw" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300 transition-all">
+            30kV CW &amp; Plasma [4]
+          </button>
+          <button onclick="filterGallery('fab')" id="galBtn-fab" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300 transition-all">
+            3D Print &amp; Proto [4]
+          </button>
+          <button onclick="filterGallery('reactor')" id="galBtn-reactor" class="tab-btn px-3.5 py-2 rounded-xl border border-slate-700 text-slate-300 transition-all">
+            Final Reactor &amp; HUD [11]
+          </button>
+        </div>
+      </div>
+
+      <!-- 22-Card Filterable Bento Grid -->
+      <div id="ozoGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+
+        <!-- ================= CAD & 3D DESIGN (5 ITEMS) ================= -->
+        <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100737.png', 'CAD 01 // Isometric 3D CAD Render: 25×25×25 cm Acrylic Chamber atop the 25×25×20 cm 3D-Printed Base with Top Solar Panel')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="Screenshot 2026-10-25 100737.png" alt="CAD Isometric View" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">CAD // ISOMETRIC</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">01. Parametric 3D CAD — Isometric</h3>
+            <p class="text-xs text-slate-400 mt-1">Full mechanical assembly showing the 25×25×25 cm clear reaction chamber with controllable rack &amp; pinion electrodes, matte-black PLA base, and top-mounted solar array.</p>
+          </div>
+        </div>
+
+        <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100751.png', 'CAD 02 // Front Console Cutouts: Precision Bays for 2.8-inch TFT, Dual 0.96-inch OLEDs, 7-Segment Voltmeter, PWM Knob & Switches')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="Screenshot 2026-10-25 100751.png" alt="CAD Front Console View" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">CAD // FRONT CONSOLE</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">02. Front Telemetry Panel Cutouts</h3>
+            <p class="text-xs text-slate-400 mt-1">Panel tolerances modeled for flush mounting the ILI9341 TFT, dual SSD1306 OLEDs, 7-segment voltmeter, and HC-SR04 eyes.</p>
+          </div>
+        </div>
+
+        <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100756.png', 'CAD 03 // Rear & Side Architecture: Master Hardware Power Switch, Ultrasonic Perimeter Ports & Ventilation Geometry')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="Screenshot 2026-10-25 100756.png" alt="CAD Rear View" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">CAD // REAR &amp; SIDE</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">03. Rear Chassis &amp; Perimeter Ports</h3>
+            <p class="text-xs text-slate-400 mt-1">Rear enclosure geometry housing the master hardware cut-off switch and side ultrasonic proximity sensor mounts.</p>
+          </div>
+        </div>
+
+        <div data-cat="cad" onclick="openLightbox('Screenshot 2026-10-25 100800.png', 'CAD 04 // Top-Angle Internal Chamber, Rack &amp; Pinion Electrode Mount &amp; Sensor Bay Layout')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="Screenshot 2026-10-25 100800.png" alt="CAD Top Angle View" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">CAD // CHAMBER DECK</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">04. Internal Chamber Deck &amp; Mounts</h3>
+            <p class="text-xs text-slate-400 mt-1">Top-angle CAD view illustrating the internal sensor deck and the rack-and-pinion electrode mount inside the sealed acrylic chamber.</p>
+          </div>
+        </div>
+
+        <div data-cat="cad" onclick="openLightbox('2dc9cc24-c64d-442d-8b9c-dcc9b50f2714.jpg', 'CAD 05 // Designing the OzoCore 3D Wireframe Enclosure on Laptop Before Slicing for FDM 3D Printing')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="2dc9cc24-c64d-442d-8b9c-dcc9b50f2714.jpg" alt="CAD Wireframe on Laptop" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">CAD // WIREFRAME</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">05. 3D Wireframe CAD Modeling</h3>
+            <p class="text-xs text-slate-400 mt-1">Verifying internal wall thicknesses and display cutout clearances in 3D wireframe view prior to printing.</p>
+          </div>
+        </div>
+
+        <!-- ================= 30kV CW MULTIPLIER & PLASMA (4 ITEMS) ================= -->
+        <div data-cat="cw" onclick="openLightbox('5c553847-0efb-46fc-855b-c03f0d9de66f.jpg', 'CW 06 // Hand-Soldering the 30kV-Rated Cockcroft-Walton Multiplier: 15 Ceramic Capacitors & 20 High-Voltage Diodes on Silicone Mat')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="5c553847-0efb-46fc-855b-c03f0d9de66f.jpg" alt="Soldering 15 Caps 20 Diodes" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-400/50 font-mono text-[10px] text-purple-300">CW // 15 CAPS + 20 DIODES</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">06. Soldering 30kV CW Ladder</h3>
+            <p class="text-xs text-slate-400 mt-1">Assembling the Cockcroft-Walton charge pump from 15 blue 30kV ceramic capacitors and 20 HV rectifier diodes.</p>
+          </div>
+        </div>
+
+        <div data-cat="cw" onclick="openLightbox('20250829_222318.jpg', 'CW 07 // Completed Multi-Stage 30kV Capacitor-Diode Cascade with Brass Corona Discharge Nozzle Before Epoxy Encapsulation')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20250829_222318.jpg" alt="Assembled CW Multiplier Ladder" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-400/50 font-mono text-[10px] text-purple-300">CW // CASCADE BENCH</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">07. Full CW Cascade &amp; Brass Tip</h3>
+            <p class="text-xs text-slate-400 mt-1">Completed unpotted multiplier string on the insulated work mat showing stage-to-stage spacing prior to resin casting.</p>
+          </div>
+        </div>
+
+        <div data-cat="cw" onclick="openLightbox('20250901_144443.jpg', 'CW 08 // Violet Corona Ionization Glow at the High-Voltage Electrode Gap Driven by the 25kV AC Module')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20250901_144443.jpg" alt="Corona Ionization Glow" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-400/50 font-mono text-[10px] text-purple-300">PLASMA // IONIZATION</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">08. Electrode Corona Ionization</h3>
+            <p class="text-xs text-slate-400 mt-1">First localized violet corona ionization plume at the brass/wire electrode interface during bench validation.</p>
+          </div>
+        </div>
+
+        <div data-cat="cw" onclick="openLightbox('20250901_183740.jpg', 'CW 09 // 250kV High-Voltage Purple Corona Plasma Discharge Streamer in Dark-Room Testing')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20250901_183740.jpg" alt="250kV Corona Discharge Arc" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-pink-500/20 border border-pink-400/50 font-mono text-[10px] text-pink-300">PLASMA // 250kV ARC</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">09. 250 kV Corona Plasma Discharge</h3>
+            <p class="text-xs text-slate-400 mt-1">Dark-room capture of the intense purple high-voltage plasma discharge channel that dissociates O₂ into O₃.</p>
+          </div>
+        </div>
+
+        <!-- ================= 3D PRINTING & PROTOTYPING (4 ITEMS) ================= -->
+        <div data-cat="fab" onclick="openLightbox('20250914_200515.jpg', 'FAB 10 // ESP32 Breadboard Prototype: Validating Live OLED Humidity Graphing & DHT22 Telemetry Before Final Enclosure Wiring')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20250914_200515.jpg" alt="ESP32 Breadboard Prototype" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 font-mono text-[10px] text-amber-300">PROTO // BREADBOARD</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">10. ESP32 + I²C OLED Breadboard</h3>
+            <p class="text-xs text-slate-400 mt-1">Benchtop breadboard testing of the 38-pin ESP32 polling the DHT22 sensor and plotting real-time graphs on an SSD1306 OLED.</p>
+          </div>
+        </div>
+
+        <div data-cat="fab" onclick="openLightbox('20250930_162354.jpg', 'FAB 11 // Inspecting the 2.8-inch ILI9341 240×320 SPI Color TFT Display Module Prior to Panel Integration')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20250930_162354.jpg" alt="2.8 inch ILI9341 TFT" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 font-mono text-[10px] text-amber-300">PROTO // 2.8&quot; SPI TFT</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">11. 2.8&quot; ILI9341 SPI Color TFT</h3>
+            <p class="text-xs text-slate-400 mt-1">The 240×320 SPI TFT module selected as OzoCore’s primary telemetry dashboard and full-screen emergency alert monitor.</p>
+          </div>
+        </div>
+
+        <div data-cat="fab" onclick="openLightbox('c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg', 'FAB 12 // FDM 3D Printing the Matte-Black PLA OzoCore Base Enclosure on a Textured PEI Spring-Steel Build Plate')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg" alt="3D Printing OzoCore Base" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 font-mono text-[10px] text-amber-300">FAB // FDM 3D PRINT</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">12. 3D Printing the PLA Chassis</h3>
+            <p class="text-xs text-slate-400 mt-1">Fabricating the custom matte-black PLA electronics bay with precision cutouts for all 4 displays and perimeter ultrasonics.</p>
+          </div>
+        </div>
+
+        <div data-cat="fab" onclick="openLightbox('20260110_182314.jpg', 'FAB 13 // First-Layer PLA Extrusion Calibration on Textured PEI Build Plate for Structural Enclosure Panels')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20260110_182314.jpg" alt="First Layer PLA Print" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 font-mono text-[10px] text-amber-300">FAB // PEI BED ADHESION</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">13. Precision First-Layer Calibration</h3>
+            <p class="text-xs text-slate-400 mt-1">Verifying bed leveling and first-layer squish on the textured PEI sheet so the 25×25 cm enclosure walls print warp-free.</p>
+          </div>
+        </div>
+
+        <!-- ================= FINAL REACTOR & LIVE TELEMETRY (9 ITEMS) ================= -->
+        <div data-cat="reactor" onclick="openLightbox('IMG-20260121-WA0006.jpg', 'REACTOR 14 // Mechanical Dry-Fit in the School Science Lab: 25×25×25 cm Acrylic Chamber Seated on the 3D-Printed Matte-Black Base')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="IMG-20260121-WA0006.jpg" alt="Dry Fit Assembly in Lab" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">BUILD // LAB DRY-FIT</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">14. Chamber &amp; Base Dry-Fit in Lab</h3>
+            <p class="text-xs text-slate-400 mt-1">Testing mechanical fitment of the sealed 25×25×25 cm acrylic cube atop the 3D-printed base with displays installed.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0003.jpg', 'REACTOR 15 // Macro Close-Up: Controllable Corona Discharge Electrodes Mounted on Precision Rack &amp; Pinion Drive')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="IMG-20260128-WA0003.jpg" alt="Controllable Rack and Pinion Corona Electrodes" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-pink-500/20 border border-pink-400/50 font-mono text-[10px] text-pink-300">ELECTRODES // RACK &amp; PINION</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">15. Controllable Electrodes (Rack &amp; Pinion)</h3>
+            <p class="text-xs text-slate-400 mt-1">Macro view of the electrodes mounted on a mechanical rack-and-pinion drive to continuously adjust spark gap distance and tune Paschen breakdown voltage.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0001.jpg', 'REACTOR 16 // Front Elevation of OzoCore: Console Displays, Chamber Electrodes & External Epoxy-Potted CW Multiplier')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="IMG-20260128-WA0001.jpg" alt="Front Elevation OzoCore" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">REACTOR // FRONT VIEW</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">16. Front Elevation &amp; HV Feedthrough</h3>
+            <p class="text-xs text-slate-400 mt-1">Full vertical profile showing the front control console, reaction chamber, and side-mounted HV multiplier block.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('IMG-20260126-WA0000.jpg', 'REACTOR 17 // Complete OzoCore Reactor in the Science Lab with Top Solar Panel & Clear Epoxy-Encapsulated 15-Cap / 20-Diode CW Multiplier')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="IMG-20260126-WA0000.jpg" alt="Complete OzoCore in Lab" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">REACTOR // SOLAR + CW</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">17. Full Solar + Epoxy CW Assembly</h3>
+            <p class="text-xs text-slate-400 mt-1">Completed reactor with top photovoltaic panel and the clear epoxy-encapsulated 30 kV multiplier block on the left.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('20260126_135727.jpg', 'REACTOR 18 // Top-Side Inspection of the Solid Epoxy-Resin Potted Cockcroft-Walton Block & High-Voltage Silicone Leads')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20260126_135727.jpg" alt="Epoxy Potted CW Block Close-Up" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">DIELECTRIC // EPOXY BLOCK</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">18. Epoxy-Encapsulated CW Block</h3>
+            <p class="text-xs text-slate-400 mt-1">Overhead view of the cured two-part epoxy block isolating the 15 ceramic capacitors and 20 diodes from air breakdown.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0008.jpg', 'REACTOR 19 // Powered-On Console: 12.6V 7-Segment Voltmeter, 2.8-inch TFT Dashboard, Dual OLEDs & Illuminated Chamber')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="IMG-20260128-WA0008.jpg" alt="OzoCore Powered Console 12.6V" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">HUD // 12.6V BUS ACTIVE</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">19. Live Console @ 12.6 V PWM Input</h3>
+            <p class="text-xs text-slate-400 mt-1">Front console running at 12.6 V on the 7-segment display with green WS2812B ambient status lighting inside the chamber.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('20260126_133636.jpg', 'REACTOR 20 // Close-Up of the 2.8-inch ILI9341 TFT Dashboard & 12.6V Voltmeter During Calibration')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20260126_133636.jpg" alt="Close-up TFT and 12.6V Readout" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">HUD // TFT DASHBOARD</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">20. TFT Telemetry UI &amp; Voltmeter</h3>
+            <p class="text-xs text-slate-400 mt-1">Close-up showing the custom ILI9341 graphical telemetry layout alongside the 3-digit LED voltage readout.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('20260520_095443.jpg', 'REACTOR 21 // Live Exhibition Telemetry at Al-Shola 29th Innovation Exhibition: O3 = 4.77 ppm, Temp = 24.7°C, Hum = 45.5%, CHAMBER: SECURED')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20260520_095443.jpg" alt="Live Exhibition Telemetry 4.77 ppm O3" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 font-mono text-[10px] text-cyan-300">EXPO // 4.77 PPM O₃ LIVE</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">21. Exhibition Live Run (4.77 ppm O₃)</h3>
+            <p class="text-xs text-slate-400 mt-1">Simultaneous readout across the 2.8&quot; TFT and dual OLEDs showing active ozone synthesis at 4.77 ppm with chamber secured.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('20260520_095415.jpg', 'REACTOR 22 // Internal Sensor Bank Inspection: SC01-O3, MQ-135, MQ-2, DHT22 & IR Interlock Inside the Reaction Chamber')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="20260520_095415.jpg" alt="Internal Sensor Bank View" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">SENSORS // INTERNAL BANK</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">22. Internal Chamber Sensor Array</h3>
+            <p class="text-xs text-slate-400 mt-1">Side/rear view through the clear acrylic chamber showing the internal gas sensor modules, DHT22, and epoxy HV block.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('ozocore_full_body.jpg', 'REACTOR 23 // Full-Body Architecture: Top Solar Panel, 25×25×25 cm Sealed Acrylic Chamber, Corona Electrodes, Sensor Array, 3D-Printed Console & Side Multiplier')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="ozocore_full_body.jpg" alt="OzoCore Full Body" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/50 font-mono text-[10px] text-emerald-300">BUILD // FULL-BODY REACTOR</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">23. Full-Body Reactor Architecture</h3>
+            <p class="text-xs text-slate-400 mt-1">Complete elevation showing the 25 cm sealed acrylic chamber, corona electrodes, glowing sensor deck, and 3D-printed telemetry console.</p>
+          </div>
+        </div>
+
+        <div data-cat="reactor" onclick="openLightbox('ozocore_competition_booth.jpg', 'REACTOR 24 // Al-Shola 29th Innovation Exhibition: Official Project Identification Board #17 (School: Manarat Al Sharjah Private School, Cycle 3 - AI for Life)')" class="gal-card hud-card rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between">
+          <div class="relative h-48 overflow-hidden bg-slate-950">
+            <img src="ozocore_competition_booth.jpg" alt="OzoCore Competition Booth" class="raw-upright w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 font-mono text-[10px] text-amber-300">EXPO // BOOTH BOARD #17</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-white text-sm">24. Exhibition Booth #17 Display</h3>
+            <p class="text-xs text-slate-400 mt-1">Official competition presentation at Manarat Al Sharjah Private School with presentation laptop, live reactor, and Project Board #17.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 06. FIRMWARE ARCHITECTURE & 6 REAL DEBUGGING WAR STORIES              -->
+    <!-- ===================================================================== -->
+    <section id="war-stories" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
+      <div class="mb-10">
+        <div class="inline-flex items-center gap-2 font-mono text-xs text-amber-400 uppercase tracking-widest mb-2">
+          <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">SECTION 06 // FIRMWARE DESIGN &amp; REAL HARDWARE DEBUGGING WAR STORIES</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          6 Real Hardware &amp; Firmware Bugs I Solved Building OzoCore
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
+          Integrating a 250 kV plasma source with 9 sensors and 4 displays on a single 38-pin ESP32 exposed real-world hardware constraints that never show up in textbook schematics.
+        </p>
+      </div>
+
+      <!-- 4 Firmware Golden Rules Banner -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="hud-card rounded-xl p-4 border-l-2 border-l-cyan-400">
+          <div class="font-mono text-[10px] text-cyan-400 uppercase font-bold">RULE 01 // ZERO BLOCKING</div>
+          <div class="font-display font-bold text-white text-sm mt-0.5">No <code class="text-cyan-300 font-mono">delay()</code> in Main Loop</div>
+          <p class="text-xs text-slate-400 mt-1">All sensor polling, OLED refreshes, and LED ring animations run on independent <code class="text-cyan-300 font-mono">millis()</code> timers so safety cut-offs respond instantly.</p>
+        </div>
+        <div class="hud-card rounded-xl p-4 border-l-2 border-l-purple-400">
+          <div class="font-mono text-[10px] text-purple-400 uppercase font-bold">RULE 02 // ROUND-ROBIN SONAR</div>
+          <div class="font-display font-bold text-white text-sm mt-0.5">Sequential HC-SR04 Pings</div>
+          <p class="text-xs text-slate-400 mt-1">Pinging all 4 ultrasonic sensors at once caused acoustic cross-talk; a round-robin state machine fires one sensor per time slice.</p>
+        </div>
+        <div class="hud-card rounded-xl p-4 border-l-2 border-l-emerald-400">
+          <div class="font-mono text-[10px] text-emerald-400 uppercase font-bold">RULE 03 // DIRTY-RECT TFT</div>
+          <div class="font-display font-bold text-white text-sm mt-0.5">Flicker-Free SPI Updates</div>
+          <p class="text-xs text-slate-400 mt-1">The 2.8&quot; ILI9341 TFT only redraws numerical regions when values change, reserving full-screen fills strictly for emergency state transitions.</p>
+        </div>
+        <div class="hud-card rounded-xl p-4 border-l-2 border-l-red-400">
+          <div class="font-mono text-[10px] text-red-400 uppercase font-bold">RULE 04 // HARD INTERLOCK</div>
+          <div class="font-display font-bold text-white text-sm mt-0.5">Relay Preempts Everything</div>
+          <p class="text-xs text-slate-400 mt-1">Safety evaluation runs at the top of every cycle and forces the HV relay pin LOW before any display or serial task executes.</p>
+        </div>
+      </div>
+
+      <!-- 6 Debugging War Stories Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-amber-400">
+          <div class="font-mono text-xs text-amber-400 font-bold mb-1">BUG 01 // GPIO EXHAUSTION</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Running Out of Pins on a 38-Pin ESP32</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Between the SPI TFT, 3 OLEDs, 4 ultrasonic sensors, 3 analog gas sensors, DHT22, IR sensor, WS2812B ring, buzzer, and HV relay, I hit the ESP32’s physical pin ceiling. I had to carefully map <code class="text-cyan-300 font-mono">GPIO 34–39</code> strictly as input-only ADC/echo lines and avoid strapping pins (<code class="text-cyan-300 font-mono">GPIO 0, 2, 12, 15</code>) that prevented the MCU from booting.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-purple-400">
+          <div class="font-mono text-xs text-purple-400 font-bold mb-1">BUG 02 // I²C ADDRESS COLLISION</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Three OLEDs Hardwired to <code class="text-purple-300 font-mono">0x3C</code></h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            All three 0.96&quot; SSD1306 OLEDs came hardwired to the exact same I²C address (<code class="text-cyan-300 font-mono">0x3C</code>). Putting them on one bus caused them to mirror each other or corrupt frames. I partitioned the ESP32’s two hardware I²C controllers (<code class="text-cyan-300 font-mono">Wire</code> and <code class="text-cyan-300 font-mono">Wire1</code>) / multiplexer channels, and tracked down a flaky jumper wire that was throwing intermittent NACK freezes.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-cyan-400">
+          <div class="font-mono text-xs text-cyan-400 font-bold mb-1">BUG 03 // THE WHITE-SCREEN LOCKUP</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Inverted IR Chamber-Lift Polarity</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            During early integration, the 2.8&quot; TFT kept flashing solid white/red and locking the reactor in emergency cut-off even with the acrylic chamber seated. Debugging revealed the IR obstacle module pulls its output <strong class="text-white">LOW when blocked (chamber seated)</strong> and <strong class="text-white">HIGH when lifted</strong> — the exact opposite of my initial boolean check.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-emerald-400">
+          <div class="font-mono text-xs text-emerald-400 font-bold mb-1">BUG 04 // PHANTOM 10 PPM SATURATION</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">SC01-O3 Reading 10 ppm in Fresh Air</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            On first power-up, the <code class="text-cyan-300 font-mono">SC01-O3</code> sensor immediately reported <code class="text-red-300 font-mono">10.0 ppm (SATURATED)</code> in clean room air and tripped the HV relay. Tracing the harness with a multimeter revealed the analog signal wire was landed on an adjacent pin held high; moving it to the dedicated <code class="text-cyan-300 font-mono">ADC1</code> input restored clean <code class="text-emerald-300 font-mono">0.0–0.1 ppm</code> baseline readings.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-red-400">
+          <div class="font-mono text-xs text-red-400 font-bold mb-1">BUG 05 // 5V VS. 3.3V LOGIC DISCIPLINE</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Protecting ESP32 Inputs After a 5V Casualty</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            An earlier dust sensor was permanently damaged during prototyping when 5V power and 3.3V signal lines were mixed up. From that point forward, I enforced a strict dual-rail wiring standard: sensors requiring 5V heaters (<code class="text-cyan-300 font-mono">MQ-2</code>, <code class="text-cyan-300 font-mono">MQ-135</code>) have their outputs scaled/clamped so no ESP32 GPIO ever sees above <code class="text-emerald-300 font-mono">3.3 V</code>.
+          </p>
+        </div>
+
+        <div class="hud-card rounded-2xl p-6 border-t-2 border-t-pink-400">
+          <div class="font-mono text-xs text-pink-400 font-bold mb-1">BUG 06 // 250kV CORONA EMI &amp; FLASHOVER</div>
+          <h3 class="font-display text-lg font-bold text-white mb-2">Solving Air Breakdown with Epoxy Potting</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Before encapsulation, the 15-capacitor / 20-diode 30kV CW ladder hissed and arced between stages in humid air, radiating broadband EMI that glitched the I²C displays. Vacuum-potting the entire multiplier in clear epoxy resin (~20 kV/mm dielectric strength) and isolating it outside the electronics bay eliminated both stage flashover and MCU resets.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-slate-800/80 bg-slate-950/90 py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="file_000000003d3c71f5a85fb76ab88dbfcd.png" alt="OzoCore Logo" class="h-9 w-auto rounded-lg border border-cyan-500/30 bg-slate-950 px-1.5 py-0.5" />
+        <div>
+          <div class="font-display font-bold text-white text-sm">OZOCORE // 250kV High-Voltage Cold-Plasma Reactor Dossier</div>
+          <div class="font-mono text-xs text-slate-400">Engineered by Kenan Hussam Eddin Al Chayah • Manarat Al Sharjah Private School</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="index.html#ozocore" class="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-mono font-bold text-xs flex items-center gap-2 transition-all">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Back to Main Portfolio (index.html)</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE SCRIPTS: SINGLE-SLIDER 6–15V MODEL, GALLERY & LIGHTBOX    -->
+  <!-- ===================================================================== -->
+  <script>
+    // Initialize Lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    // 1. Lightbox Inspection Modal
+    function openLightbox(src, caption) {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const cap = document.getElementById('lightboxCaption');
+      img.src = src;
+      cap.textContent = caption || '';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    document.getElementById('lightboxModal').addEventListener('click', (e) => {
+      if (e.target.id === 'lightboxModal') closeLightbox();
+    });
+
+    // 2. Gallery Category Filter
+    function filterGallery(cat) {
+      ['all', 'cad', 'cw', 'fab', 'reactor'].forEach((c) => {
+        const btn = document.getElementById('galBtn-' + c);
+        if (btn) {
+          if (c === cat) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('#ozoGalleryGrid .gal-card').forEach((card) => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // =========================================================================
+    // 3. SINGLE-SLIDER (6.0V – 15.0V PWM) HARDWARE-SPEC MATHEMATICAL MODEL
+    // =========================================================================
+    // Hardware Specifications:
+    // - HV Driver Module: 25 kV AC high-frequency driver, 6.0 V to 15.0 V PWM input, 65.0 W max output at 15.0 V.
+    // - CW Multiplier: 30 kV-rated 15 ceramic capacitors + 20 diodes (~250 kV peak at 15.0 V).
+    // - Chamber Volume: 25 x 25 x 25 cm = 15.625 L (0.015625 m^3).
+    // - Sensor & Safety Cut-Off: SC01-O3 (0-10 ppm range), Warning at 6.0 ppm, Automatic HV Relay Cut-Off at 8.0 ppm.
+    // - Observed Reference Benchmark: C(60s) = 5.00 ppm at V = 15.0 V (65.0 W HV output), half-life tau_1/2 = 25 min.
+    const CHAMBER_VOL_M3 = 0.015625;        // 15.625 Liters
+    const MG_PER_M3_PER_PPM = 2.0;          // 1 ppm O3 ≈ 2.0 mg/m^3 at 25°C
+    const HALF_LIFE_MIN = 25.0;             // Room-temp O3 half-life inside acrylic chamber
+    const DECAY_K = Math.LN2 / (HALF_LIFE_MIN * 60.0); // s^-1
+    const P_MAX_15V = 65.0;                 // 65 Watts max output at 15.0 V
+    const P_MCU_ELEC = 3.75;                // ESP32 + 4 displays + 9 sensors + LED ring (W)
+    const WARN_PPM = 6.0;
+    const CUTOFF_PPM = 8.0;
+    const SENSOR_MAX_PPM = 10.0;
+
+    // Baseline generation rate G_15V (ppm/s) anchored so C(60s) = 5.0 ppm at 15V:
+    const G_15V = (5.0 * DECAY_K) / (1.0 - Math.exp(-DECAY_K * 60.0));
+
+    // Modeled 25kV AC Driver Power (W) as a function of PWM Voltage V in [6.0, 15.0]:
+    // Scales as 65.0 * (V / 15.0)^2 -> 10.4 W at 6V, 23.4 W at 9V, 41.6 W at 12V, 65.0 W at 15V
+    function calcHvPowerWatts(V) {
+      return P_MAX_15V * Math.pow(V / 15.0, 2);
+    }
+
+    // Modeled CW Multiplier Peak Output (kV) across 15 caps & 20 diodes:
+    function calcCwPeakKv(V) {
+      return 250.0 * (V / 15.0);
+    }
+
+    // Simulate a 10-minute (600s) run with 5-second resolution for a given PWM voltage V
+    function simulateOzoneRun(V) {
+      const dt = 5; // seconds
+      const totalSec = 600; // 10 minutes
+      const pHv = calcHvPowerWatts(V);
+      const genRate = G_15V * (pHv / P_MAX_15V); // ppm/s
+
+      const labels = [];
+      const concSeries = [];
+      const massMgSeries = [];
+      const energyWhSeries = [];
+
+      let c = 0.0;
+      let cumPpmProduced = 0.0;
+      let cumEnergyWh = 0.0;
+      let relayTripped = false;
+      let tWarnMin = null;
+      let tCutMin = null;
+      let cAt60s = 0.0;
+
+      for (let t = 0; t <= totalSec; t += dt) {
+        const minLabel = (t / 60).toFixed(1);
+        labels.push(minLabel + 'm');
+
+        if (t === 60) cAt60s = c;
+
+        const ppmToMgFactor = MG_PER_M3_PER_PPM * CHAMBER_VOL_M3; // 0.03125 mg per ppm
+        concSeries.push(Number(c.toFixed(2)));
+        massMgSeries.push(Number((cumPpmProduced * ppmToMgFactor).toFixed(3)));
+        energyWhSeries.push(Number(cumEnergyWh.toFixed(3)));
+
+        if (t < totalSec) {
+          if (!relayTripped) {
+            // dC/dt = G - k*C
+            const cNext = c + (genRate - DECAY_K * c) * dt;
+            cumPpmProduced += genRate * dt;
+            cumEnergyWh += ((pHv + P_MCU_ELEC) * dt) / 3600.0;
+
+            if (tWarnMin === null && cNext >= WARN_PPM) {
+              tWarnMin = (t + dt) / 60.0;
+            }
+            if (cNext >= CUTOFF_PPM) {
+              c = CUTOFF_PPM;
+              relayTripped = true;
+              if (tCutMin === null) tCutMin = (t + dt) / 60.0;
+            } else {
+              c = cNext;
+            }
+          } else {
+            // Relay is OFF: G = 0, natural first-order decay C(t+dt) = C(t)*exp(-k*dt)
+            c = c * Math.exp(-DECAY_K * dt);
+            cumEnergyWh += (P_MCU_ELEC * dt) / 3600.0;
+          }
+        }
+      }
+
+      return {
+        labels,
+        concSeries,
+        massMgSeries,
+        energyWhSeries,
+        pHv,
+        pTotal: pHv + P_MCU_ELEC,
+        cwKv: calcCwPeakKv(V),
+        cAt60s,
+        tWarnMin,
+        tCutMin,
+        totalMassMg: massMgSeries[massMgSeries.length - 1]
+      };
+    }
+
+    let chartConc = null;
+    let chartFamily = null;
+    let chartPower = null;
+    let chartMassEnergy = null;
+
+    function initAndRenderSimulation(V) {
+      const sim = simulateOzoneRun(V);
+
+      // Update Live DOM Readouts
+      document.getElementById('pwmVoltReadout').textContent = V.toFixed(1) + ' V';
+      document.getElementById('metricHvPower').textContent = sim.pHv.toFixed(1) + ' W';
+      document.getElementById('metricTotalPower').textContent = sim.pTotal.toFixed(1) + ' W Total w/ MCU';
+      document.getElementById('metricCwKv').textContent = '~' + Math.round(sim.cwKv) + ' kV';
+      document.getElementById('metricO3At60s').textContent = sim.cAt60s.toFixed(2) + ' ppm';
+      document.getElementById('metricTimeWarn').textContent = sim.tWarnMin ? sim.tWarnMin.toFixed(1) + ' min' : '> 10 min';
+      document.getElementById('metricTimeCutoff').textContent = sim.tCutMin ? sim.tCutMin.toFixed(1) + ' min' : 'No Trip (<8 ppm)';
+      document.getElementById('metricTotalMass').textContent = sim.totalMassMg.toFixed(3) + ' mg';
+
+      const nPts = sim.labels.length;
+      const warnLine = Array(nPts).fill(WARN_PPM);
+      const cutLine = Array(nPts).fill(CUTOFF_PPM);
+      const ceilLine = Array(nPts).fill(SENSOR_MAX_PPM);
+
+      // Reference family curves at 6V, 9V, 12V, 15V
+      const ref6 = simulateOzoneRun(6.0).concSeries;
+      const ref9 = simulateOzoneRun(9.0).concSeries;
+      const ref12 = simulateOzoneRun(12.0).concSeries;
+      const ref15 = simulateOzoneRun(15.0).concSeries;
+
+      // Voltage sweep curve from 6.0V to 15.0V (step 0.5V) for Graph 3
+      const vSteps = [];
+      const pSteps = [];
+      const kvSteps = [];
+      const activePointP = [];
+      for (let v = 6.0; v <= 15.001; v += 0.5) {
+        const vr = Number(v.toFixed(1));
+        vSteps.push(vr.toFixed(1) + 'V');
+        const pw = Number(calcHvPowerWatts(vr).toFixed(1));
+        pSteps.push(pw);
+        kvSteps.push(Number(calcCwPeakKv(vr).toFixed(0)));
+        activePointP.push(Math.abs(vr - V) < 0.05 ? pw : null);
+      }
+
+      if (!window.Chart) return;
+      Chart.defaults.color = '#94a3b8';
+      Chart.defaults.font.family = "'JetBrains Mono', monospace";
+      Chart.defaults.font.size = 10;
+
+      // Chart 1: Chamber Concentration vs Time
+      if (!chartConc) {
+        chartConc = new Chart(document.getElementById('simChartConcentration'), {
+          type: 'line',
+          data: {
+            labels: sim.labels,
+            datasets: [
+              {
+                label: `Modeled O₃ @ ${V.toFixed(1)}V (ppm)`,
+                data: sim.concSeries,
+                borderColor: '#00f2fe',
+                backgroundColor: 'rgba(0, 242, 254, 0.14)',
+                borderWidth: 2.5,
+                pointRadius: 0,
+                fill: true,
+                tension: 0.25
+              },
+              {
+                label: 'Warning (6.0 ppm)',
+                data: warnLine,
+                borderColor: '#f59e0b',
+                borderDash: [5, 5],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                fill: false
+              },
+              {
+                label: 'Auto HV Cut-Off (8.0 ppm)',
+                data: cutLine,
+                borderColor: '#ef4444',
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false
+              },
+              {
+                label: 'SC01-O3 Max (10.0 ppm)',
+                data: ceilLine,
+                borderColor: '#64748b',
+                borderDash: [2, 4],
+                borderWidth: 1,
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 180 },
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { min: 0, max: 10.5, title: { display: true, text: 'Ozone (ppm)' }, grid: { color: 'rgba(148,163,184,0.1)' } },
+              x: { ticks: { maxTicksLimit: 11 }, grid: { color: 'rgba(148,163,184,0.05)' } }
+            }
+          }
+        });
+      } else {
+        chartConc.data.datasets[0].label = `Modeled O₃ @ ${V.toFixed(1)}V (ppm)`;
+        chartConc.data.datasets[0].data = sim.concSeries;
+        chartConc.update();
+      }
+
+      // Chart 2: Voltage Sweep Comparison
+      if (!chartFamily) {
+        chartFamily = new Chart(document.getElementById('simChartVoltageFamily'), {
+          type: 'line',
+          data: {
+            labels: sim.labels,
+            datasets: [
+              {
+                label: `Selected (${V.toFixed(1)}V)`,
+                data: sim.concSeries,
+                borderColor: '#00f2fe',
+                borderWidth: 3,
+                pointRadius: 0,
+                tension: 0.25
+              },
+              {
+                label: '15.0V (65.0W Max)',
+                data: ref15,
+                borderColor: 'rgba(244, 63, 94, 0.55)',
+                borderDash: [4, 3],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.25
+              },
+              {
+                label: '12.0V (41.6W)',
+                data: ref12,
+                borderColor: 'rgba(181, 55, 242, 0.55)',
+                borderDash: [4, 3],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.25
+              },
+              {
+                label: '9.0V (23.4W)',
+                data: ref9,
+                borderColor: 'rgba(16, 185, 129, 0.55)',
+                borderDash: [4, 3],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.25
+              },
+              {
+                label: '6.0V (10.4W Min)',
+                data: ref6,
+                borderColor: 'rgba(148, 163, 184, 0.5)',
+                borderDash: [3, 3],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.25
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 180 },
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { min: 0, max: 9.0, title: { display: true, text: 'Chamber O₃ (ppm)' }, grid: { color: 'rgba(148,163,184,0.1)' } },
+              x: { ticks: { maxTicksLimit: 11 }, grid: { color: 'rgba(148,163,184,0.05)' } }
+            }
+          }
+        });
+      } else {
+        chartFamily.data.datasets[0].label = `Selected (${V.toFixed(1)}V)`;
+        chartFamily.data.datasets[0].data = sim.concSeries;
+        chartFamily.update();
+      }
+
+      // Chart 3: 25kV AC Driver Power (W) & CW Multiplier Output (kV) vs PWM Voltage
+      if (!chartPower) {
+        chartPower = new Chart(document.getElementById('simChartPowerCurve'), {
+          type: 'line',
+          data: {
+            labels: vSteps,
+            datasets: [
+              {
+                label: 'Selected Operating Point',
+                data: activePointP,
+                borderColor: '#ffffff',
+                backgroundColor: '#00f2fe',
+                pointRadius: 7,
+                pointHoverRadius: 9,
+                showLine: false,
+                yAxisID: 'y'
+              },
+              {
+                label: '25kV Driver Output Power (W)',
+                data: pSteps,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                borderWidth: 2.5,
+                pointRadius: 2,
+                fill: true,
+                tension: 0.3,
+                yAxisID: 'y'
+              },
+              {
+                label: 'Est. CW Multiplier Peak (kV)',
+                data: kvSteps,
+                borderColor: '#b537f2',
+                borderDash: [5, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0.1,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 180 },
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { type: 'linear', position: 'left', min: 0, max: 72, title: { display: true, text: 'Driver Power (W)' }, grid: { color: 'rgba(148,163,184,0.1)' } },
+              y1: { type: 'linear', position: 'right', min: 80, max: 270, title: { display: true, text: 'CW Potential (kV)' }, grid: { drawOnChartArea: false } },
+              x: { grid: { color: 'rgba(148,163,184,0.05)' } }
+            }
+          }
+        });
+      } else {
+        chartPower.data.datasets[0].data = activePointP;
+        chartPower.update();
+      }
+
+      // Chart 4: Cumulative Ozone Mass (mg) & Energy Consumed (Wh)
+      if (!chartMassEnergy) {
+        chartMassEnergy = new Chart(document.getElementById('simChartMassEnergy'), {
+          type: 'line',
+          data: {
+            labels: sim.labels,
+            datasets: [
+              {
+                label: 'Cumulative O₃ Synthesized (mg)',
+                data: sim.massMgSeries,
+                borderColor: '#00f2fe',
+                backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                borderWidth: 2.5,
+                pointRadius: 0,
+                fill: true,
+                tension: 0.25,
+                yAxisID: 'y'
+              },
+              {
+                label: 'Total Energy Consumed (Wh)',
+                data: sim.energyWhSeries,
+                borderColor: '#f59e0b',
+                borderDash: [5, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0.25,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 180 },
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { type: 'linear', position: 'left', min: 0, title: { display: true, text: 'O₃ Mass (mg)' }, grid: { color: 'rgba(148,163,184,0.1)' } },
+              y1: { type: 'linear', position: 'right', min: 0, title: { display: true, text: 'Energy (Wh)' }, grid: { drawOnChartArea: false } },
+              x: { ticks: { maxTicksLimit: 11 }, grid: { color: 'rgba(148,163,184,0.05)' } }
+            }
+          }
+        });
+      } else {
+        chartMassEnergy.data.datasets[0].data = sim.massMgSeries;
+        chartMassEnergy.data.datasets[1].data = sim.energyWhSeries;
+        chartMassEnergy.update();
+      }
+    }
+
+    function setPwmVoltage(val) {
+      const slider = document.getElementById('pwmVoltageSlider');
+      slider.value = val;
+      initAndRenderSimulation(Number(val));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const slider = document.getElementById('pwmVoltageSlider');
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          initAndRenderSimulation( parseFloat(e.target.value) );
+        });
+        initAndRenderSimulation( parseFloat(slider.value) );
+      }
+    });
+
+    // Ambient Plasma Particle Canvas
+    (function initCanvas() {
+      const canvas = document.getElementById('circuitCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [];
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      for (let i = 0; i < 38; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.8 + 0.6,
+          c: i % 2 === 0 ? 'rgba(0, 242, 254, 0.35)' : 'rgba(181, 55, 242, 0.35)'
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h;
+          if (p.y > h) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.c;
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+  </script>
+</body>
+</html>

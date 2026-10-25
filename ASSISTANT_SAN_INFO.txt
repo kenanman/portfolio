@@ -1,0 +1,179 @@
+================================================================================
+                    PROJECT: ASSISTANT-SAN (COMPLETE BRIEF & SPEC)
+================================================================================
+
+1. WHAT IS ASSISTANT-SAN?
+--------------------------------------------------------------------------------
+ASSISTANT-SAN is a standalone desktop AI companion robot powered by an ESP32-S3
+microcontroller. It connects directly to Wi-Fi and streams bidirectional,
+real-time voice audio to Google's Gemini Multimodal Live API via a lightweight
+cloud relay (no local PC required to operate).
+
+Key Features:
+- Real-Time Voice Conversation: Full-duplex speech-to-speech with Google Gemini.
+- mmWave Radar Spatial Tracking: A 24GHz radar tracks human coordinates and
+  distance in real time; the assistant's digital eyes track the user's position
+  across the desk and automatically wake up within a 1.5-meter radius.
+- Animated Vector Display: A 2.8" color TFT screen shows expressive, reactive eyes
+  (Idle, Listening, Thinking, Speaking) plus HUD data (temperature, humidity, distance).
+- 360° ARGB Halo Underglow: 24-LED addressable RGB ring shines onto the desk with
+  breathing cyan, pulsing green, and voice-reactive blue/purple animations.
+- Ambient Telemetry: Built-in DHT22 sensor injects room temperature and humidity
+  directly into Gemini's system instructions so it knows its physical environment.
+- High-Power Sound: Built-in 5W X-Rocker speaker driver inside an acoustic chamber.
+
+
+2. COMPLETE HARDWARE MANIFEST & SPECIFICATIONS
+--------------------------------------------------------------------------------
+1. Microcontroller:
+   - ESP32-S3-WROOM-1-N16R8 (16MB Flash, 8MB Octal OPI PSRAM).
+   - CRITICAL CONSTRAINT: GPIO 33, 34, 35, 36, and 37 are internally reserved for
+     Octal PSRAM and CANNOT be used. GPIO 26-32 reserved for Flash.
+     Strapping pins (0, 3, 45, 46) and native USB (19, 20) are protected.
+
+2. Audio Input (Microphone):
+   - InvenSense ICS-43434 digital I2S MEMS microphone breakout.
+   - 16-bit mono 16kHz audio capture via DMA.
+
+3. Audio Output (Amplifier & Speaker):
+   - MAX98357A I2S Class-D mono amplifier breakout (5W).
+   - X-Rocker 4 Ohm, 5W speaker driver unit (83.0 mm x 83.0 mm x 50.0 mm).
+
+4. Display:
+   - 2.8-inch ILI9341 SPI TFT LCD (240x320 resolution).
+   - PCB dimensions: 86.0 mm x 50.0 mm. Active window: 57.6 mm x 43.2 mm.
+
+5. Spatial Tracking Radar:
+   - Hi-Link HLK-LD2450 24GHz multi-target human tracking mmWave radar.
+   - Interface: UART @ 256,000 baud (extracts X/Y coordinates and distance).
+   - PCB dimensions: 44.0 mm x 15.0 mm.
+
+6. Underglow Lighting:
+   - 24-Bit WS2812B NeoPixel ARGB LED ring.
+   - Dimensions: 66.0 mm Outer Diameter (OD), 52.0 mm Inner Diameter (ID).
+
+7. Environmental Sensor:
+   - DHT22 (AM2302) temperature & humidity digital sensor (1-Wire).
+
+8. Power Supply:
+   - Standard 5V @ 3.0A (15W) USB-C power brick.
+
+
+3. MASTER GPIO PINOUT MATRIX (ESP32-S3 N16R8)
+--------------------------------------------------------------------------------
+Dual independent I2S buses prevent clock conflicts between mic capture and playback.
+
+MODULE            SIGNAL           ESP32-S3 PIN   BUS / INTERFACE     NOTES
+--------------------------------------------------------------------------------
+ICS-43434 Mic     SCK (Bit Clock)  GPIO 4         I2S_NUM_1 (RX)      1.024 MHz clock
+ICS-43434 Mic     WS (Word Select) GPIO 5         I2S_NUM_1 (RX)      16.0 kHz sync
+ICS-43434 Mic     SD (Data Out)    GPIO 17        I2S_NUM_1 (RX)      47 ohm damping resistor
+ICS-43434 Mic     L/R (Channel)    GND (AGND)     --                  Tie to GND (Left channel)
+
+MAX98357A Amp     BCLK (Bit Clock) GPIO 15        I2S_NUM_0 (TX)      Bit clock
+MAX98357A Amp     LRC (Word Select)GPIO 16        I2S_NUM_0 (TX)      Playback sample sync
+MAX98357A Amp     DIN (Audio In)   GPIO 7         I2S_NUM_0 (TX)      PCM audio stream
+MAX98357A Amp     SD_MODE (Mute)   GPIO 6         Digital Output      100k pull-up to 3.3V (anti-pop)
+
+ILI9341 2.8" TFT  SCK (SPI Clock)  GPIO 12        FSPI (Native IOMUX) 40.0 MHz SPI clock
+ILI9341 2.8" TFT  MOSI (Data In)   GPIO 11        FSPI (Native IOMUX) High-speed SPI data
+ILI9341 2.8" TFT  MISO (Data Out)  GPIO 13        FSPI (Native IOMUX) Display status/ID
+ILI9341 2.8" TFT  CS (Chip Select) GPIO 10        FSPI Control        Active Low
+ILI9341 2.8" TFT  DC (Command/Data)GPIO 9         FSPI Control        Low=Cmd, High=Data
+ILI9341 2.8" TFT  RST (Reset)      GPIO 14        Digital Output      Active Low reset
+ILI9341 2.8" TFT  LED (Backlight)  GPIO 47        LEDC PWM            5 kHz PWM dimming
+
+HLK-LD2450 Radar  TX (Radar Out)   GPIO 18        UART1 RX            256,000 baud
+HLK-LD2450 Radar  RX (Radar In)    GPIO 8         UART1 TX            256,000 baud
+
+WS2812B 24-LED    DIN (Data In)    GPIO 38        RMT Digital         Via 74AHCT1G125 level shifter
+DHT22 Sensor      DATA             GPIO 21        1-Wire              External 4.7k pull-up to 3.3V
+
+
+4. POWER ARCHITECTURE (4 ISOLATED DOMAINS)
+--------------------------------------------------------------------------------
+To prevent speaker amplifier current spikes and LED switching noise from buzzing
+into the microphone line or causing radar ghost targets:
+
+1. 5V_DIRTY (High-Current Pulsed Domain):
+   - Powers: MAX98357A 5W Amp + 24-LED WS2812B ARGB ring.
+   - Filter: 1000 uF low-ESR bulk electrolytic capacitor + 100 nF ceramic.
+   - Draw: ~470 mA nominal, up to 1.75 A peak burst.
+
+2. 5V_RADAR (RF Filtered Domain):
+   - Powers: HLK-LD2450 24GHz mmWave radar.
+   - Filter: 600 ohm @ 100MHz Ferrite bead + 22 uF + 100 nF Pi-filter.
+   - Draw: ~120 mA average.
+
+3. 3V3_DIGITAL (Logic & Display Domain):
+   - Powers: ESP32-S3 SoC + ILI9341 2.8" TFT display + DHT22.
+   - Draw: ~250 mA nominal (up to 450 mA during Wi-Fi transmission).
+
+4. 3V3_ANALOG_MIC (Ultra-Clean Audio Domain):
+   - Powers: ICS-43434 digital MEMS microphone only.
+   - Regulator: Dedicated high-PSRR 3.3V LDO (e.g. TLV75533 / LP5907) with 10 uF
+     and 100 nF decoupling right at the mic pins (< -88 dBFS noise floor).
+   - Draw: ~1.5 mA.
+
+Total Power: ~0.85 A (4.25 W) nominal conversation | ~2.38 A (11.9 W) max peak.
+Powered by a single 5V 3A USB-C connection with star grounding.
+
+
+5. SOFTWARE & CLOUD ARCHITECTURE
+--------------------------------------------------------------------------------
+A. ESP32-S3 Firmware (ASSISTANT_SAN.ino) — Dual-Core FreeRTOS:
+   - Core 0 (Network & Audio Pipeline):
+     * Maintains persistent WebSocket stream to Cloud Relay.
+     * Captures 16kHz 16-bit mono PCM from ICS-43434 via DMA into PSRAM ring buffer.
+     * Receives 24kHz/16kHz PCM audio chunks from Cloud Relay into playback ring
+       buffer feeding MAX98357A I2S DAC.
+     * Low-latency barge-in support: instantly flushes audio queue when user speaks.
+   - Core 1 (UI, Radar & Lighting):
+     * Parses 30-byte binary UART frames from HLK-LD2450 at 256,000 baud.
+     * Real-time eye tracking: moves eye pupils on TFT based on user's X coordinate.
+     * Proactive wake: automatically activates screen/session when user is within 1.5m.
+     * 35+ FPS eye animations: Idle (blinking), Listening (wide pupils), Thinking, Speaking.
+     * 24-LED ARGB halo: Breathing cyan (idle), pulsing green (listening), voice-reactive.
+     * DHT22 background polling every 2 seconds.
+
+B. Zero-PC Cloud Relay (main.py, Dockerfile):
+   - Built with Python FastAPI & official google-genai SDK.
+   - Containerized for 1-click deployment on Google Cloud Run or Render.
+   - Handles Gemini Live WebSocket handshake (`BidiGenerateContent`).
+   - Resamples Gemini's 24kHz audio to 16kHz via polyphase filter for ESP32.
+   - Injects real-time spatial (radar distance) and environmental (DHT22 temp/humidity)
+     context into Gemini's system instructions seamlessly.
+
+
+6. ENCLOSURE & 3D PRINTING DESIGN (assistant_san_case.scad)
+--------------------------------------------------------------------------------
+- Printer Profile: Voxelab Aquila (220 x 220 x 250 mm bed), 0.4 mm nozzle.
+- Filament: White PLA (thin 0.8mm walls act as translucent ARGB diffuser,
+  thin 1.2mm walls act as 24GHz RF-transparent radome for the radar).
+- Build Plate: Textured PEI plate (Front Bezel prints face-down for matte finish).
+- 3-Piece Modular Enclosure:
+  1. Main_Body: Acoustic chamber for 83x83x50mm X-Rocker speaker, electronics bay,
+     hexagonal acoustic grille, rear USB-C cutout, and thermally isolated DHT22 vent.
+  2. Front_Bezel: Recessed visor for 2.8" TFT, stealth radome pocket for radar,
+     and isolated pinhole microphone acoustic port with silicone gasket seat.
+  3. Bottom_Diffuser_Base: Circular channel for 24-LED ring with elevated feet
+     casting 360-degree underglow onto the desk.
+- Design Rules: All overhangs <= 45 degrees for 100% zero-support printing.
+
+
+7. PROJECT DELIVERABLE FILES IN WORKSPACE
+--------------------------------------------------------------------------------
+- ASSISTANT_SAN.ino         : Complete Arduino C++ dual-core FreeRTOS firmware.
+- User_Setup.h              : TFT_eSPI 40MHz native FSPI configuration for ILI9341.
+- PINOUT_AND_POWER.md       : Complete 52KB electrical spec, pinout, & power budget.
+- main.py                   : FastAPI Gemini Multimodal Live WebSocket cloud relay.
+- requirements.txt          : Python dependencies (fastapi, google-genai, scipy, etc.).
+- Dockerfile                : Production container configuration for Cloud Run / Render.
+- assistant_san_case.scad   : Parametric OpenSCAD 3D printable case script.
+- Front_Bezel.stl           : Ready-to-slice STL for front visor & radar radome.
+- Main_Body.stl             : Ready-to-slice STL for speaker chamber & electronics.
+- Bottom_Diffuser_Base.stl  : Ready-to-slice STL for 24-LED underglow pedestal.
+- Full_Assembly.stl         : Complete assembled 3D preview model.
+- WAKE_UP_START_HERE.md     : Step-by-step master wiring, slicer, & deployment guide.
+- TEST_READY.md             : Quality audit & 47/47 passing automated test report.
+================================================================================
