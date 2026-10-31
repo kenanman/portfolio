@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OzoCore — 250kV High-Voltage Cold-Plasma Ozone Reactor | Kenan Al Chayah</title>
-  <meta name="description" content="Complete engineering dossier for OzoCore: 250kV Cockcroft-Walton high-voltage ozone reactor (25kV AC 6-15V 65W driver, 30kV-rated 15 ceramic capacitors & 20 diodes) with 9-sensor ESP32 safety interlocks, built by Kenan Al Chayah." />
+  <title>OzoCore — 250kV High-Voltage Ozone Generator | Kenan Al Chayah</title>
+  <meta name="description" content="Complete technical documentation for OzoCore: 250kV Cockcroft-Walton high-voltage ozone generator (25kV AC 6-15V 65W driver, 30kV-rated 15 ceramic capacitors & 20 diodes) with 9-sensor ESP32 safety interlocks, built by Kenan Al Chayah." />
 
   <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -290,14 +290,14 @@
       <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
         <span class="inline-flex items-center gap-1.5 text-cyan-400 font-semibold">
           <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-          DOSSIER // OZOCORE 250kV REACTOR
+          OZOCORE // 250kV OZONE GENERATOR
         </span>
         <span class="text-slate-700">|</span>
         <span class="text-slate-300">DRIVER: <strong class="text-white">25kV AC (6–15V, 65W Max)</strong></span>
         <span class="text-slate-700">|</span>
         <span class="text-purple-300">CW LADDER: <strong class="text-white">30kV-Rated (15 Caps + 20 Diodes)</strong></span>
         <span class="text-slate-700">|</span>
-        <span class="text-pink-300">ELECTRODES: <strong class="text-white">Rack &amp; Pinion Controllable Gap</strong></span>
+        <span class="text-pink-300">ELECTRODES: <strong class="text-white">Rack &amp; Pinion Adjustable Gap</strong></span>
         <span class="text-slate-700">|</span>
         <span class="text-emerald-400 font-semibold">CHAMBER: 25×25×25 cm (15.6L)</span>
       </div>
@@ -329,15 +329,15 @@
 
       <!-- Navigation Links with visible custom glowing cyan slider on overflow -->
       <nav class="flex-1 min-w-0 flex items-center justify-end gap-1.5 font-mono text-[11px] xl:text-xs hud-nav-slider py-1.5 px-1">
-        <a href="#overview" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">01.Overview</a>
-        <a href="#physics-cw" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">02.CW_Multiplier</a>
-        <a href="#architecture" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">03.Safety_&_Sensors</a>
+        <a href="#overview" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">Overview</a>
+        <a href="#physics-cw" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">HV Multiplier</a>
+        <a href="#architecture" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">Safety &amp; Sensors</a>
         <a href="#simulation" class="px-2.5 py-1.5 rounded-lg text-cyan-200 bg-cyan-500/20 border border-cyan-400/50 hover:bg-cyan-500/30 transition-all whitespace-nowrap shrink-0 font-semibold flex items-center gap-1 shadow-sm shadow-cyan-500/20">
           <i data-lucide="sliders" class="w-3 h-3 text-cyan-400"></i>
-          <span>04.6–15V_Model</span>
+          <span>6–15V Model</span>
         </a>
-        <a href="#gallery" class="px-2.5 py-1.5 rounded-lg text-purple-300 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all whitespace-nowrap shrink-0">05.Gallery[24]</a>
-        <a href="#war-stories" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">06.War_Stories</a>
+        <a href="#gallery" class="px-2.5 py-1.5 rounded-lg text-purple-300 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition-all whitespace-nowrap shrink-0">Gallery (24)</a>
+        <a href="#war-stories" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-slate-800/50 transition-all whitespace-nowrap shrink-0">Troubleshooting</a>
       </nav>
     </div>
   </header>
@@ -354,7 +354,7 @@
         <div class="lg:col-span-7 space-y-6">
           <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-xs font-mono text-cyan-300 shadow-lg">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            <span>FLAGSHIP HARDWARE DOSSIER // HIGH-VOLTAGE DIELECTRIC CORONA REACTOR</span>
+            <span>PROJECT 01 TECHNICAL DOCUMENTATION • HIGH-VOLTAGE ELECTRONICS &amp; EMBEDDED SYSTEMS</span>
           </div>
 
           <div class="flex items-center gap-4">
@@ -364,13 +364,13 @@
                 OzoCore <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 plasma-glow-text">250 kV</span>
               </h1>
               <p class="font-mono text-xs sm:text-sm text-cyan-300 mt-1">
-                High-Voltage Cold-Plasma Ozone Synthesis &amp; 9-Sensor Autonomous Safety Reactor
+                High-Voltage Corona-Discharge Ozone Generator with 9-Sensor ESP32 Safety Interlocks
               </p>
             </div>
           </div>
 
           <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
-            <strong class="text-white">OzoCore</strong> is a self-contained high-voltage plasma reactor I designed, 3D-printed, hand-soldered, and programmed from scratch to study <strong class="text-cyan-300">corona-discharge ozone synthesis (3O<sub>2</sub> → 2O<sub>3</sub>)</strong> inside a sealed <strong class="text-white">25 × 25 × 25 cm (15.625 L)</strong> clear acrylic chamber. Rather than treating ozone generation as an unmonitored open spark gap, OzoCore pairs an epoxy-potted <strong class="text-purple-300">250 kV Cockcroft-Walton multiplier</strong> with <strong class="text-pink-300">controllable dual electrodes mounted on a precision rack-and-pinion drive</strong> (enabling continuous mechanical gap spacing adjustment to tune Paschen breakdown voltage and prevent thermal arc-over) and a deterministic <strong class="text-emerald-300">ESP32 safety supervisor</strong> monitoring 9 sensors across 4 live displays.
+            <strong class="text-white">OzoCore</strong> is a self-contained high-voltage ozone generator I designed, 3D-printed, hand-soldered, and programmed from scratch to study <strong class="text-cyan-300">corona-discharge ozone generation (3O<sub>2</sub> → 2O<sub>3</sub>)</strong> inside a sealed <strong class="text-white">25 × 25 × 25 cm (15.625 L)</strong> clear acrylic chamber. It pairs an epoxy-potted <strong class="text-purple-300">250 kV Cockcroft-Walton voltage multiplier</strong> with <strong class="text-pink-300">dual electrodes mounted on an adjustable rack-and-pinion drive</strong> (allowing me to adjust the spark gap spacing to maintain a steady corona discharge without arcing) and an <strong class="text-emerald-300">ESP32 safety controller</strong> monitoring 9 sensors across 4 live displays.
           </p>
 
           <!-- Hardware Spec Bento Strip (8 Key Subsystem Metrics) -->
@@ -425,10 +425,10 @@
               </div>
               <div class="text-xs leading-relaxed text-slate-200">
                 <div class="font-mono font-bold text-amber-300 uppercase tracking-wider mb-0.5">
-                  COMPETITION CONTEXT // REGIONAL CANCELLATIONS &amp; LIVE EXHIBITION
+                  EXHIBITION RECORD // AL-SHOLA 29TH INNOVATION EXHIBITION
                 </div>
                 <p class="text-slate-300">
-                  OzoCore was built last academic year as my flagship hardware system. Because regional geopolitical escalations (<strong class="text-white">the Iran–USA conflict</strong>) caused all major external national science and engineering competitions in that cycle to be cancelled, OzoCore was instead demonstrated live at the <strong class="text-amber-300">Al-Shola 29th Innovation Exhibition</strong> (where its real-time telemetry reached <code class="text-cyan-300 font-mono">4.77 ppm O₃</code> under closed-loop safety supervision).
+                  OzoCore was built as my main hardware project in Grade 11. Because several external regional competitions were cancelled that semester, I demonstrated OzoCore live at the <strong class="text-amber-300">Al-Shola 29th Innovation Exhibition</strong> (where it reached <code class="text-cyan-300 font-mono">4.77 ppm O₃</code> under automatic safety monitoring).
                 </p>
               </div>
             </div>
@@ -1310,18 +1310,18 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- 06. FIRMWARE ARCHITECTURE & 6 REAL DEBUGGING WAR STORIES              -->
+    <!-- 06. FIRMWARE ARCHITECTURE & 6 REAL DEBUGGING NOTES                    -->
     <!-- ===================================================================== -->
     <section id="war-stories" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
       <div class="mb-10">
         <div class="inline-flex items-center gap-2 font-mono text-xs text-amber-400 uppercase tracking-widest mb-2">
-          <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">SECTION 06 // FIRMWARE DESIGN &amp; REAL HARDWARE DEBUGGING WAR STORIES</span>
+          <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">SECTION 06 // FIRMWARE DESIGN &amp; HARDWARE TROUBLESHOOTING</span>
         </div>
         <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          6 Real Hardware &amp; Firmware Bugs I Solved Building OzoCore
+          6 Hardware &amp; Firmware Issues Solved During the Build
         </h2>
         <p class="text-slate-300 text-sm sm:text-base mt-2 max-w-3xl">
-          Integrating a 250 kV plasma source with 9 sensors and 4 displays on a single 38-pin ESP32 exposed real-world hardware constraints that never show up in textbook schematics.
+          Combining a 250 kV multiplier with 9 sensors and 4 displays on a single 38-pin ESP32 surfaced several wiring, bus, and EMI problems during testing.
         </p>
       </div>
 
@@ -1409,7 +1409,7 @@
       <div class="flex items-center gap-3">
         <img src="file_000000003d3c71f5a85fb76ab88dbfcd.png" alt="OzoCore Logo" class="h-9 w-auto rounded-lg border border-cyan-500/30 bg-slate-950 px-1.5 py-0.5" />
         <div>
-          <div class="font-display font-bold text-white text-sm">OZOCORE // 250kV High-Voltage Cold-Plasma Reactor Dossier</div>
+          <div class="font-display font-bold text-white text-sm">OZOCORE // 250kV High-Voltage Ozone Generator Documentation</div>
           <div class="font-mono text-xs text-slate-400">
             Kenan Hussam Eddin Al Chayah • <a href="mailto:kenanalchayah@gmail.com" class="text-cyan-400 hover:underline">kenanalchayah@gmail.com</a> • <a href="mailto:apivotanimator@gmail.com" class="text-slate-400 hover:text-white hover:underline">apivotanimator@gmail.com</a>
           </div>
