@@ -14,6 +14,7 @@ check_links.py
 
 # GitHub 100MB+ blocker
 20250914_200520.mp4
+Desktop*.mp4
 
 # Unreferenced heavy raw videos (not used in HTML, saves ~600MB)
 20250720_215543.mp4
