@@ -1598,12 +1598,26 @@
               <span class="text-[10px] text-slate-400">CLICK TO ENLARGE</span>
             </div>
 
-            <!-- Primary Photo: f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg -->
-            <div onclick="openLightbox('f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg', 'Smart Desert Reclaimer Rover — 4-Wheel Chassis, Custom Sheet-Aluminum Deck, Articulated Sheet-Metal Soil Probe Arm, Camera Mast & NRF24L01+ Antenna')" class="group cursor-pointer rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950 mb-3 relative">
-              <img src="f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg" alt="Smart Desert Reclaimer Rover Actual Hardware" class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform" />
-              <div class="p-3 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between">
-                <span class="font-mono text-xs text-emerald-300 font-bold">01. Completed Smart Desert Reclaimer Rover + NRF24L01+ Setup</span>
-                <span class="font-mono text-[10px] text-cyan-400">[Full View ↗]</span>
+            <!-- Dual Primary Hardware Photos: Top-Down Architecture (ROVER.jpg) + Front-Quarter Setup (f80aa784...) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div onclick="openLightbox('ROVER.jpg', 'Smart Desert Reclaimer Rover — Top-Down Architecture: Folded Sheet-Aluminum Chassis, Raspberry Pi Zero 2 W, Arduino Uno R3, Buck Converter, NRF24L01+ Antenna & Front Articulated Capacitive Soil Probe Arm')" class="group cursor-pointer rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950 flex flex-col justify-between">
+                <div class="h-56 sm:h-64 overflow-hidden bg-slate-950 flex items-center justify-center p-1">
+                  <img src="ROVER.jpg" alt="Smart Desert Reclaimer Rover Top-Down Hardware" class="raw-upright max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                </div>
+                <div class="p-2.5 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between">
+                  <span class="font-mono text-xs text-emerald-300 font-bold truncate">01. Top-Down Chassis &amp; Controllers</span>
+                  <span class="font-mono text-[10px] text-cyan-400 shrink-0">[Zoom ↗]</span>
+                </div>
+              </div>
+
+              <div onclick="openLightbox('f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg', 'Smart Desert Reclaimer Rover — Assembled 4WD Rover with Camera Mast, Articulated Probe Arm & 2.4GHz Link')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950 flex flex-col justify-between">
+                <div class="h-56 sm:h-64 overflow-hidden bg-slate-950 flex items-center justify-center">
+                  <img src="f80aa784-cc4f-44ef-8b38-9b9ff127b397.jpg" alt="Smart Desert Reclaimer Rover Assembled Hardware" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                </div>
+                <div class="p-2.5 bg-slate-950/95 border-t border-slate-800 flex items-center justify-between">
+                  <span class="font-mono text-xs text-slate-300 font-bold truncate">02. Assembled Rover + Wireless Link</span>
+                  <span class="font-mono text-[10px] text-cyan-400 shrink-0">[Zoom ↗]</span>
+                </div>
               </div>
             </div>
 
@@ -1611,17 +1625,17 @@
             <div class="grid grid-cols-3 gap-3 mb-4">
               <div onclick="openLightbox('20260426_230935.jpg', 'Live Raspberry Pi Terminal Running rover_brain.py — MobileNet V2 Soil Classification: High Fertility (87.6%)')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                 <img src="20260426_230935.jpg" alt="MobileNet V2 Terminal" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                <div class="p-2 font-mono text-[10px] text-emerald-300">02. MobileNet V2 (87.6%)</div>
+                <div class="p-2 font-mono text-[10px] text-emerald-300">03. MobileNet V2 (87.6%)</div>
               </div>
 
               <div onclick="openLightbox('20260216_152651.jpg?v=2', 'Unboxed Rover Drivetrain Kit: 4× TT Gearmotors, Wheels, Chassis Plates, L298N H-Bridge & Arduino Uno')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
                 <img src="20260216_152651.jpg?v=2" alt="Unboxed Rover Kit" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                <div class="p-2 font-mono text-[10px] text-slate-300">03. 4WD Drivetrain Kit</div>
+                <div class="p-2 font-mono text-[10px] text-slate-300">04. 4WD Drivetrain Kit</div>
               </div>
 
               <div onclick="openLightbox('20260426_211635.jpg', 'Raspberry Pi OS Camera Classification & Serial Test')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
                 <img src="20260426_211635.jpg" alt="Raspberry Pi Vision" class="w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                <div class="p-2 font-mono text-[10px] text-slate-300">04. Pi Vision Setup</div>
+                <div class="p-2 font-mono text-[10px] text-slate-300">05. Pi Vision Setup</div>
               </div>
             </div>
 
