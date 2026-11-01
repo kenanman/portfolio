@@ -666,7 +666,7 @@
               I build all of my projects either at my bedroom desk or in our school's chemistry lab (where my chemistry teacher gives me a pass to work and films test runs for the school's social media). My everyday toolkit is simple: an electric screwdriver set, wire strippers, solder paste, and a basic <strong class="text-purple-300">15 AED soldering iron</strong>. To stay on a high-school budget, I salvage parts wherever I can — recovering <strong class="text-white">four working official Arduino Unos</strong> from retired student projects (with my design teacher's permission), dismantling my worn-out X-Rocker Monsoon 4.1 gaming chair for its steel support frame, subwoofer, speakers, tweeters, and RGB control board, and keeping a drawer stocked with Arduino/ESP32 sensors, magnesium strips, homemade ferric oxide, and lithium safely recovered from batteries for chemistry experiments.
             </p>
             <p class="text-slate-300 text-sm leading-relaxed">
-              My 3D printer is a boxed <strong class="text-white">Voxelab Aquila</strong> I bought at a liquidation sale for <strong class="text-emerald-300">300 AED</strong> and rebuilt almost completely: new extruder, hotend, PEI magnetic build plate, power supply, Bowden tube, 3D Touch auto-leveling sensor, 3D-printed dampening feet and tool holder, and upgraded cooling fans. When the replacement fan I ordered turned out to be too large for the stock carriage, I took an existing printhead CAD model, modified the geometry to fit the oversized fan, and printed my own custom shroud.
+              My 3D printer is a boxed <strong class="text-white">Voxelab Aquila</strong> I bought at a liquidation sale for <strong class="text-emerald-300">300 AED</strong> and rebuilt almost completely: new extruder, hotend, PEI magnetic build plate, power supply, Bowden tube, 3D Touch auto-leveling sensor, 3D-printed dampening feet and tool holder, and upgraded cooling fans. When the replacement fan I ordered turned out to be too large for the stock carriage, I took an existing printhead CAD model, modified the geometry to fit the oversized fan, and printed my own custom shroud. Later, when building OzoCore, its 25×25 cm base was too big for the Aquila's 220×220 mm bed—so I spent 30+ hours in Tinkercad modeling 15 custom parts from scratch, including an interlocking 4-quadrant chassis and a symmetrical dual rack-and-pinion spark gap mechanism.
             </p>
           </div>
 
@@ -806,6 +806,38 @@
                 <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
                   <span class="text-slate-400 block text-[10px]">4 SHUT-OFF PATHS</span>
                   <span class="text-amber-400 font-semibold">2× Switches • PWM • Relay</span>
+                </div>
+              </div>
+
+              <!-- 3D Printed Mechanism & 4-Quadrant Chassis Showcase Card -->
+              <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/90 border border-pink-500/30 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-pink-400"></span>
+                    <span class="font-mono text-xs font-bold text-pink-300 uppercase">15 Custom 3D-Printed Parts • Tinkercad (30+ Hours)</span>
+                  </div>
+                  <span class="font-mono text-[10px] text-slate-400">PLA • Voxelab Aquila Rebuild</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                  <div onclick="openLightbox('ozocore_mechanism_parts.png', 'Tinkercad CAD: Symmetrical dual rack-and-pinion spark gap mechanism. Center pinion gear meshes with two opposing racks holding insulated electrode tubes, mounting plate with guide slots, and knob shaft.')" class="md:col-span-5 group cursor-pointer rounded-xl overflow-hidden border border-pink-500/30 hover:border-pink-400 bg-slate-950">
+                    <img src="ozocore_mechanism_parts.png" alt="Dual Rack and Pinion Mechanism in Tinkercad" class="raw-upright w-full h-44 object-cover group-hover:scale-105 transition-transform" />
+                    <div class="p-2 bg-slate-950 font-mono text-[10px] text-pink-300 flex justify-between">
+                      <span>Tinkercad: Mechanism &amp; Plate</span>
+                      <span class="text-cyan-400 underline">Inspect CAD ↗</span>
+                    </div>
+                  </div>
+
+                  <div class="md:col-span-7 space-y-2.5 text-xs text-slate-300 leading-relaxed">
+                    <div>
+                      <strong class="text-white block font-sans text-sm">Symmetrical Dual Rack-and-Pinion:</strong>
+                      To adjust the spark gap without opening the chamber, I designed a center pinion gear that drives two opposing linear racks at the same time. Each rack carries an insulated electrode tube along guide slots in the mounting plate, letting me tune the gap distance smoothly with an external knob to get a violet corona instead of a dead short arc.
+                    </div>
+                    <div>
+                      <strong class="text-white block font-sans text-sm">Overcoming Printer Bed Limits:</strong>
+                      The 25×25 cm base was larger than my Voxelab Aquila's 220×220 mm bed, so I engineered the chassis into four interlocking quadrants (Front Left, Front Right, Back Left, Back Right) with flush bays for all 4 screens, sensors, and wiring.
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1038,87 +1070,92 @@
                   <img src="2dc9cc24-c64d-442d-8b9c-dcc9b50f2714.jpg" alt="CAD Wireframe" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
                   <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">05. 3D Wireframe CAD</div>
                 </div>
+                <div data-cat="cad" onclick="openLightbox('ozocore_mechanism_parts.png', 'CAD 06: Symmetrical Dual-Rack and Pinion Spark Gap Mechanism in Tinkercad (30+ hours of CAD). Center pinion gear drives two opposing racks with insulated electrode tubes, mounting plate with guide slots, and knob shaft.')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
+                  <img src="ozocore_mechanism_parts.png" alt="Dual-Rack & Pinion Mechanism CAD" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">06. CAD Dual-Rack &amp; Pinion</div>
+                </div>
+
 
                 <!-- 30kV CW Multiplier & Plasma (4) -->
                 <div data-cat="cw" onclick="openLightbox('5c553847-0efb-46fc-855b-c03f0d9de66f.jpg', 'CW 06: Hand-Soldering 30kV-Rated 15 Ceramic Capacitors & 20 Diodes on Silicone Mat')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
                   <img src="5c553847-0efb-46fc-855b-c03f0d9de66f.jpg" alt="15 Caps 20 Diodes" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">06. 15 Caps + 20 Diodes</div>
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">07. 15 Caps + 20 Diodes</div>
                 </div>
                 <div data-cat="cw" onclick="openLightbox('20250829_222318.jpg', 'CW 07: Completed 30kV Cockcroft-Walton Cascade with Brass Electrode Tip')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
                   <img src="20250829_222318.jpg" alt="CW Ladder Bench" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">07. Full 30kV CW Ladder</div>
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">08. Full 30kV CW Ladder</div>
                 </div>
                 <div data-cat="cw" onclick="openLightbox('20250901_144443.jpg', 'CW 08: Violet Corona Ionization Glow at the Brass/Wire Electrode Interface')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-purple-400 bg-slate-950">
                   <img src="20250901_144443.jpg" alt="Corona Glow" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">08. Corona Ionization</div>
+                  <div class="p-1.5 font-mono text-[10px] text-purple-300 truncate">09. Corona Ionization</div>
                 </div>
                 <div data-cat="cw" onclick="openLightbox('20250901_183740.jpg', 'CW 09: 250kV Purple Corona Plasma Discharge Streamer in Dark-Room Test')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-pink-400 bg-slate-950">
                   <img src="20250901_183740.jpg" alt="250kV Corona Arc" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">09. 250kV Plasma Arc</div>
+                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">10. 250kV Plasma Arc</div>
                 </div>
 
                 <!-- 3D Print & Proto (4) -->
                 <div data-cat="fab" onclick="openLightbox('20250914_200515.jpg', 'FAB 10: ESP32 Breadboard Prototype Polling DHT22 & Graphing on SSD1306 OLED')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
                   <img src="20250914_200515.jpg" alt="ESP32 Breadboard" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">10. ESP32 Breadboard</div>
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">11. ESP32 Breadboard</div>
                 </div>
                 <div data-cat="fab" onclick="openLightbox('20250930_162354.jpg', 'FAB 11: 2.8-inch ILI9341 240×320 SPI Color TFT Display Module')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
                   <img src="20250930_162354.jpg" alt="2.8 inch TFT" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">11. 2.8&quot; ILI9341 TFT</div>
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">12. 2.8&quot; ILI9341 TFT</div>
                 </div>
                 <div data-cat="fab" onclick="openLightbox('c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg', 'FAB 12: FDM 3D Printing the Matte-Black PLA OzoCore Base on PEI Build Plate')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
                   <img src="c7bbdca8-3500-495c-88f3-cc4e00e948a6.jpg" alt="3D Printing Base" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">12. 3D Printing Base</div>
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">13. 3D Printing Base</div>
                 </div>
                 <div data-cat="fab" onclick="openLightbox('20260110_182314.jpg', 'FAB 13: First-Layer PLA Extrusion Calibration on Textured PEI Bed')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
                   <img src="20260110_182314.jpg" alt="First Layer Print" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">13. PEI Bed Adhesion</div>
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">14. PEI Bed Adhesion</div>
                 </div>
 
                 <!-- Final Reactor & Live Telemetry (9) -->
                 <div data-cat="reactor" onclick="openLightbox('IMG-20260121-WA0006.jpg', 'REACTOR 14: Lab Dry-Fit of 25×25×25 cm Acrylic Chamber on 3D-Printed Base')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="IMG-20260121-WA0006.jpg" alt="Lab Dry Fit" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">14. Chamber Dry-Fit</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">15. Chamber Dry-Fit</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0003.jpg', 'REACTOR 15: Controllable Corona Discharge Electrodes Mounted on Rack &amp; Pinion Drive Inside Sealed Chamber')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="IMG-20260128-WA0003.jpg" alt="Rack and Pinion Electrodes" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">15. Rack &amp; Pinion Electrodes</div>
+                  <div class="p-1.5 font-mono text-[10px] text-pink-300 truncate">16. Rack &amp; Pinion Electrodes</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0001.jpg', 'REACTOR 16: Front Elevation of OzoCore Console, Electrodes & Potted CW Block')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="IMG-20260128-WA0001.jpg" alt="Front Elevation" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">16. Front Elevation</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">17. Front Elevation</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('IMG-20260126-WA0000.jpg', 'REACTOR 17: Full OzoCore Assembly in Lab with Top Solar Panel & Epoxy-Potted CW Block')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="IMG-20260126-WA0000.jpg" alt="Full Reactor in Lab" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">17. Solar + CW Reactor</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">18. Solar + CW Reactor</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('20260126_135727.jpg', 'REACTOR 18: Clear Epoxy-Resin Potted 30kV CW Multiplier Block & HV Leads')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="20260126_135727.jpg" alt="Epoxy CW Block" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">18. Epoxy CW Block</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">19. Epoxy CW Block</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('IMG-20260128-WA0008.jpg', 'REACTOR 19: Powered Console Running at 12.6V PWM Input with Green Status Ring')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="IMG-20260128-WA0008.jpg" alt="12.6V Console" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">19. 12.6V Live Console</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">20. 12.6V Live Console</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('20260126_133636.jpg', 'REACTOR 20: Close-Up of 2.8-inch TFT Telemetry UI & 12.6V Voltmeter')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="20260126_133636.jpg" alt="TFT Close Up" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">20. TFT Dashboard UI</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">21. TFT Dashboard UI</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('20260520_095443.jpg', 'REACTOR 21: Live Exhibition Telemetry Reading O3: 4.77 ppm, Temp: 24.7°C, Hum: 45.5%, CHAMBER: SECURED')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-cyan-400 bg-slate-950">
                   <img src="20260520_095443.jpg" alt="Expo Live 4.77 ppm" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">21. Expo: 4.77 ppm O₃</div>
+                  <div class="p-1.5 font-mono text-[10px] text-cyan-300 truncate">22. Expo: 4.77 ppm O₃</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('20260520_095415.jpg', 'REACTOR 22: Internal Sensor Bank (SC01-O3, MQ-135, MQ-2, DHT22) Inside Acrylic Chamber')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="20260520_095415.jpg" alt="Internal Sensor Bank" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">22. Internal Sensors</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">23. Internal Sensors</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('ozocore_full_body.jpg', 'REACTOR 23: Full-Body Architecture — 250kV Sealed Acrylic Reaction Chamber, Corona Electrodes, 3D-Printed Console & Multiplier')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-400 bg-slate-950">
                   <img src="ozocore_full_body.jpg" alt="OzoCore Full Body" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">23. Full-Body Reactor</div>
+                  <div class="p-1.5 font-mono text-[10px] text-emerald-300 truncate">24. Full-Body Reactor</div>
                 </div>
                 <div data-cat="reactor" onclick="openLightbox('ozocore_competition_booth.jpg', 'REACTOR 24: Al-Shola 29th Innovation Exhibition Booth — Official Project Identification Board #17 (Cycle 3 - AI for Life)')" class="idx-ozo-item group cursor-pointer rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400 bg-slate-950">
                   <img src="ozocore_competition_booth.jpg" alt="OzoCore Exhibition Booth" class="raw-upright w-full h-24 object-cover group-hover:scale-105 transition-transform" />
-                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">24. Exhibition Booth #17</div>
+                  <div class="p-1.5 font-mono text-[10px] text-amber-300 truncate">25. Exhibition Booth #17</div>
                 </div>
               </div>
             </div>
