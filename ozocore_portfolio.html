@@ -905,7 +905,7 @@
     <!-- 04. SINGLE-SLIDER (6V–15V PWM) MODELED PERFORMANCE SIMULATOR          -->
     <!-- ===================================================================== -->
     <section id="simulation" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/80">
-      <div class="hud-card hud-corners rounded-3xl p-6 sm:p-10 border-cyan-500/40 relative overflow-hidden">
+      <div class="bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 hud-corners rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-2xl">
         <!-- Ambient Glow -->
         <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -2299,9 +2299,10 @@
       // 7. 3D HOLOGRAPHIC TILT ON CARDS & STAT BADGES
       // =========================================================================
       if (window.VanillaTilt) {
-        const tiltTargets = document.querySelectorAll('.hud-card, .grid-cols-2.sm\\:grid-cols-4 > .hud-card');
+        const tiltTargets = Array.from(document.querySelectorAll('.hud-card, .grid-cols-2.sm\\:grid-cols-4 > .hud-card'))
+          .filter(el => !el.closest('#simulation'));
         tiltTargets.forEach((el) => el.classList.add('tilt-3d'));
-        VanillaTilt.init(Array.from(tiltTargets), {
+        VanillaTilt.init(tiltTargets, {
           max: 8,
           speed: 400,
           glare: true,
